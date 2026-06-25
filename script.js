@@ -60,3 +60,14 @@ window.addEventListener('keydown', event => {
   if (event.key === 'ArrowLeft') { currentIndex = (currentIndex - 1 + pages.length) % pages.length; renderPage(pages[currentIndex]); }
 });
 loadContent();
+
+// Reload infoskærmen hvert 30. minut, så nyt GitHub Pages-content bliver hentet.
+const AUTO_RELOAD_MINUTES = 30;
+
+window.setTimeout(() => {
+  const url = new URL(window.location.href);
+  url.searchParams.set('refresh', Date.now().toString());
+
+  // replace() undgår at fylde browser history på Raspberry Pi/kiosk.
+  window.location.replace(url.toString());
+}, AUTO_RELOAD_MINUTES * 60 * 1000);
