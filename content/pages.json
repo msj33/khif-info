@@ -103,8 +103,8 @@
     {
       "enabled": true,
       "kicker": "Kontakt",
-      "title": "Har du en nyhed?",
-      "text": "Send tekst og billede til redaktøren.",
+      "title": "Har du en god KHIF nyhed?",
+      "text": "Send tekst og billede til redaktøren - Kontakt some@khif.info",
       "footer": "KHIF Info",
       "backgroundColor": "#0f172a",
       "textColor": "#f8fafc",
