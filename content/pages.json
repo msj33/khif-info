@@ -25,9 +25,9 @@
     },
     {
       "enabled": true,
-      "kicker": "Info",
-      "title": "Træning",
-      "text": "Opdater træningstider og kontaktpersoner.",
+      "kicker": "Info - Fodbold",
+      "title": "Nye Træningstider",
+      "text": "Husk at der nye træningstider efter efterårsferien - Kontakt din træner for mere info.",
       "footer": "",
       "backgroundColor": "#1e3a8a",
       "textColor": "#eff6ff",
