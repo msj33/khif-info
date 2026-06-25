@@ -1,0 +1,115 @@
+{
+  "intervalSeconds": 30,
+  "pages": [
+    {
+      "enabled": true,
+      "kicker": "KHIF Tribune",
+      "title": "Velkommen",
+      "text": "Dagens nyheder og praktisk info.",
+      "footer": "Redigeres i /admin",
+      "backgroundColor": "#111827",
+      "textColor": "#f9fafb",
+      "accentColor": "#f59e0b",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Kampdag",
+      "title": "Næste kamp",
+      "text": "Tilføj hold, tidspunkt og bane her.",
+      "footer": "Kom og hep!",
+      "backgroundColor": "#064e3b",
+      "textColor": "#ecfdf5",
+      "accentColor": "#34d399",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Info",
+      "title": "Træning",
+      "text": "Opdater træningstider og kontaktpersoner.",
+      "footer": "",
+      "backgroundColor": "#1e3a8a",
+      "textColor": "#eff6ff",
+      "accentColor": "#93c5fd",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Klubben",
+      "title": "Frivillige søges",
+      "text": "Skriv kort hvad I mangler hjælp til.",
+      "footer": "Tak fordi du hjælper",
+      "backgroundColor": "#3b0764",
+      "textColor": "#faf5ff",
+      "accentColor": "#d8b4fe",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Sponsor",
+      "title": "Tak til vores sponsorer",
+      "text": "Indsæt sponsorlogo som baggrundsbillede eller tekst her.",
+      "footer": "",
+      "backgroundColor": "#292524",
+      "textColor": "#fafaf9",
+      "accentColor": "#fbbf24",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Nyhed",
+      "title": "Seneste nyt",
+      "text": "Kort nyhedstekst passer bedst på infoskærmen.",
+      "footer": "",
+      "backgroundColor": "#7c2d12",
+      "textColor": "#fff7ed",
+      "accentColor": "#fdba74",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Arrangement",
+      "title": "Sæt kryds i kalenderen",
+      "text": "Dato, sted og kort beskrivelse.",
+      "footer": "",
+      "backgroundColor": "#831843",
+      "textColor": "#fdf2f8",
+      "accentColor": "#f9a8d4",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Praktisk",
+      "title": "Husk",
+      "text": "Brug denne side til korte påmindelser.",
+      "footer": "",
+      "backgroundColor": "#164e63",
+      "textColor": "#ecfeff",
+      "accentColor": "#67e8f9",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Resultat",
+      "title": "Ugens resultat",
+      "text": "Holdnavn – modstander: 0-0",
+      "footer": "",
+      "backgroundColor": "#365314",
+      "textColor": "#f7fee7",
+      "accentColor": "#bef264",
+      "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Kontakt",
+      "title": "Har du en nyhed?",
+      "text": "Send tekst og billede til redaktøren.",
+      "footer": "KHIF Tribune",
+      "backgroundColor": "#0f172a",
+      "textColor": "#f8fafc",
+      "accentColor": "#38bdf8",
+      "image": ""
+    }
+  ]
+}
