@@ -81,8 +81,8 @@
     {
       "enabled": true,
       "kicker": "Praktisk",
-      "title": "Husk",
-      "text": "Brug denne side til korte påmindelser.",
+      "title": "Glemte sager",
+      "text": "Har du glemt noget på KHIF-anlægget - Tjek \"Glemte Sager\" kassen i Cafeteriet",
       "footer": "",
       "backgroundColor": "#164e63",
       "textColor": "#ecfeff",
@@ -91,9 +91,9 @@
     },
     {
       "enabled": true,
-      "kicker": "Resultat",
+      "kicker": "Resultat - Fodbold",
       "title": "Ugens resultat",
-      "text": "Holdnavn – modstander: 0-0",
+      "text": "Kolt-Hasselager – Aabyhøj: 6-1\nU14 Piger - C-række",
       "footer": "",
       "backgroundColor": "#365314",
       "textColor": "#f7fee7",
