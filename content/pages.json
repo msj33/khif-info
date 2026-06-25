@@ -58,9 +58,9 @@
     },
     {
       "enabled": true,
-      "kicker": "Nyhed",
-      "title": "Seneste nyt",
-      "text": "Kort nyhedstekst passer bedst på infoskærmen.",
+      "kicker": "Nyhed - Badminton",
+      "title": "Seneste nyt!",
+      "text": "Så er der ny opstart af Flexi-fjer for unge - Skal du være med?\n\nLæs mere info på khif.info",
       "footer": "",
       "backgroundColor": "#7c2d12",
       "textColor": "#fff7ed",
