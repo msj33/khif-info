@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KHIF Info Admin</title>
-  <link rel="stylesheet" href="./admin.css" />
+  <link rel="stylesheet" href="./admin.css?v=3" />
 </head>
 <body>
   <main class="shell">
@@ -13,7 +13,7 @@
         <p class="eyebrow">Admin</p>
         <h1>KHIF Info</h1>
       </div>
-      <button id="logoutButton" class="secondary hidden">Log ud</button>
+      <button id="logoutButton" type="button" class="secondary hidden">Log ud</button>
     </header>
 
     <section id="loginPanel" class="card">
@@ -21,8 +21,8 @@
       <p>Brug det fælles redaktør-login. Passwordet bruges også til at låse GitHub-adgangen op lokalt i browseren.</p>
       <label>Brugernavn<input id="username" autocomplete="username" placeholder="redaktor" /></label>
       <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
-      <button id="loginButton">Log ind</button>
-      <p id="loginMessage" class="message"></p>
+      <button id="loginButton" type="button">Log ind</button>
+      <p id="loginMessage" class="message">Admin-script indlæses…</p>
     </section>
 
     <section id="editorPanel" class="hidden">
@@ -49,7 +49,7 @@
       </div>
     </section>
   </main>
-  <script src="./secret.js"></script>
-  <script src="./admin.js"></script>
+  <script src="./secret.js?v=3"></script>
+  <script src="./admin.js?v=3"></script>
 </body>
 </html>
