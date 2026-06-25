@@ -1,57 +1,37 @@
-# KHIF Tribune Infoskærm
+# KHIF Info
 
-Simpel statisk infoskærm til GitHub Pages.
+Simpel statisk infoskærm til GitHub Pages med 10 sider og en statisk admin-del, som committer direkte til GitHub.
 
-## Funktioner
+## URL'er
 
-- 10 konfigurerbare sider
-- Automatisk sideskift hvert 30. sekund
-- Indhold ligger i `content/pages.json`
-- Decap CMS admin UI i `/admin`
-- Deploy til GitHub Pages via GitHub Actions
+- Site: `https://msj33.github.io/khif-info/`
+- Admin: `https://msj33.github.io/khif-info/admin/`
+- Content: `content/pages.json`
 
-## Kom i gang
+## Første opsætning
 
-```bash
-git clone https://github.com/msj33/khif-tribune.git
-cd khif-tribune
-# kopier filerne fra denne starter ind i repoet
-git add .
-git commit -m "Add simple infoscreen"
-git push
-```
+1. Opret et GitHub fine-grained personal access token.
+2. Begræns tokenet til repoet `msj33/khif-info`.
+3. Giv kun permission: `Contents: Read and write`.
+4. Åbn `tools/encrypt-token.html` lokalt i browseren.
+5. Indtast admin-brugernavn, admin-password og GitHub-token.
+6. Kopier output til `admin/secret.js`.
+7. Commit og push.
 
-Gå derefter til GitHub repoet:
+## Redaktørflow
 
-1. Settings → Pages
-2. Build and deployment → Source: **GitHub Actions**
-3. Åbn sitet når workflowet er færdigt
+1. Gå til `/admin/`.
+2. Log ind med det fælles redaktør-login.
+3. Rediger de 10 slides.
+4. Tryk Gem.
+5. Admin-siden opdaterer `content/pages.json` via GitHub API og laver en commit.
 
 ## Lokal test
 
-Da sitet bruger `fetch()` til at læse JSON, skal det køres via en lille lokal webserver:
-
 ```bash
 python3 -m http.server 8080
 ```
 
-Åbn: <http://localhost:8080>
+Åbn `http://localhost:8080`.
 
-## Redigering af indhold
-
-Manuelt: rediger `content/pages.json`.
-
-Via Decap CMS:
-
-1. Ret `admin/config.yml` så `repo:` matcher dit repo.
-2. Åbn `/admin`.
-3. Bemærk: GitHub Pages har ikke en indbygget OAuth-backend til Decap CMS. Til produktion skal du tilføje en OAuth broker, eller hoste admin på fx Netlify/Cloudflare med auth.
-
-Til lokal Decap-test kan du køre:
-
-```bash
-npx decap-server
-python3 -m http.server 8080
-```
-
-Åbn: <http://localhost:8080/admin>
+Bemærk: Admin kan kun gemme, hvis `admin/secret.js` er genereret med et gyldigt token.

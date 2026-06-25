@@ -3,9 +3,53 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin | KHIF Tribune</title>
+  <title>KHIF Info Admin</title>
+  <link rel="stylesheet" href="./admin.css" />
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h1>KHIF Info</h1>
+      </div>
+      <button id="logoutButton" class="secondary hidden">Log ud</button>
+    </header>
+
+    <section id="loginPanel" class="card">
+      <h2>Log ind</h2>
+      <p>Brug det fælles redaktør-login. Passwordet bruges også til at låse GitHub-adgangen op lokalt i browseren.</p>
+      <label>Brugernavn<input id="username" autocomplete="username" placeholder="redaktor" /></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
+      <button id="loginButton">Log ind</button>
+      <p id="loginMessage" class="message"></p>
+    </section>
+
+    <section id="editorPanel" class="hidden">
+      <div class="layout">
+        <nav id="pageTabs" class="tabs"></nav>
+        <form id="editorForm" class="card editor">
+          <div class="row"><label class="check"><input id="enabled" type="checkbox" /> Aktiv</label></div>
+          <label>Lille overskrift<input id="kicker" /></label>
+          <label>Titel<input id="title" required /></label>
+          <label>Tekst<textarea id="text" rows="5"></textarea></label>
+          <label>Footer<input id="footer" /></label>
+          <div class="grid">
+            <label>Baggrundsfarve<input id="backgroundColor" type="color" /></label>
+            <label>Tekstfarve<input id="textColor" type="color" /></label>
+            <label>Accentfarve<input id="accentColor" type="color" /></label>
+          </div>
+          <label>Billede-URL<input id="image" placeholder="https://... eller /khif-info/assets/..." /></label>
+          <div class="actions">
+            <button type="submit">Gem ændringer</button>
+            <button type="button" id="previewButton" class="secondary">Preview side</button>
+          </div>
+          <p id="saveMessage" class="message"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="./secret.js"></script>
+  <script src="./admin.js"></script>
 </body>
 </html>
