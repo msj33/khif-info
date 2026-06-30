@@ -7,26 +7,33 @@ body { margin:0; min-height:100vh; font-family:system-ui,-apple-system,BlinkMacS
 h1,h2 { margin:0; } h1 { font-size:clamp(2.4rem,5vw,4.5rem); letter-spacing:-.05em; } h2 { margin-bottom:12px; }
 .card { background:rgba(17,24,39,.88); border:1px solid rgba(148,163,184,.18); border-radius:24px; padding:24px; box-shadow:0 16px 40px rgba(0,0,0,.25); }
 .hidden { display:none !important; }
+.muted { color: var(--muted); }
 label { display:block; margin:14px 0; color:var(--muted); font-weight:650; }
 input, textarea { width:100%; margin-top:6px; padding:12px 14px; border:1px solid var(--line); border-radius:14px; background:#020617; color:var(--fg); font:inherit; }
 textarea { resize:vertical; }
 input[type="color"] { height:48px; padding:4px; }
+input[type="range"] { padding: 0; accent-color: var(--accent); }
+input[type="file"] { padding: 10px; }
 button { border:0; border-radius:14px; padding:12px 18px; background:var(--accent); color:#111827; font-weight:800; cursor:pointer; font:inherit; }
 button.secondary { background:#334155; color:var(--fg); }
+button.danger { background:#7f1d1d; color:#fee2e2; }
 button:disabled { opacity:.55; cursor:not-allowed; }
 .message { color:var(--muted); min-height:1.4em; }
 .message.error { color:var(--danger); }
-.layout { display:grid; grid-template-columns:240px 1fr; gap:20px; align-items:start; }
+.layout { display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:start; }
+.side-menu { display:grid; gap:12px; }
 .tabs { display:grid; gap:8px; }
 .tabs button { text-align:left; background:#1e293b; color:var(--fg); }
 .tabs button.active { background:var(--accent); color:#111827; }
+.side-actions { display:grid; gap:8px; }
 .editor { min-width:0; }
-.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
 .row { display:flex; align-items:center; justify-content:space-between; }
 .check { display:flex; gap:10px; align-items:center; color:var(--fg); }
 .check input { width:auto; margin:0; }
 .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
 .actions.compact { margin-top:14px; }
+.value-pill { float:right; color:#111827; background:var(--accent); padding:2px 8px; border-radius:999px; font-size:.85rem; }
 .status-card { margin-bottom:20px; }
 .status-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
 .status-label { margin:0 0 6px; color:var(--muted); font-size:.9rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
