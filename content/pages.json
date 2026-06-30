@@ -110,11 +110,22 @@
       "textColor": "#f8fafc",
       "accentColor": "#38bdf8",
       "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Gymnastik - Info",
+      "title": "Sommer-hold er oprettet 🤸",
+      "text": "Sommerholdende er oprette og i kan tilmelde jer fra 6 April\n\nSommer-sæsonen var fra Uge 17 - 26",
+      "footer": "",
+      "backgroundColor": "#111827",
+      "textColor": "#f9fafb",
+      "accentColor": "#f59e0b",
+      "image": ""
     }
   ],
   "meta": {
-    "version": 7,
-    "updatedAt": "2026-06-30T22:40:33.647Z",
+    "version": 8,
+    "updatedAt": "2026-06-30T22:42:54.359Z",
     "updatedBy": "khif"
   },
   "config": {
