@@ -98,7 +98,7 @@
       "backgroundColor": "#365314",
       "textColor": "#f7fee7",
       "accentColor": "#bef264",
-      "image": "/khif-info/assets/uploads/1782856606067-733499575-1510539537316323-4246480027590.jpg"
+      "image": "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg"
     },
     {
       "enabled": true,
@@ -113,14 +113,14 @@
     }
   ],
   "meta": {
-    "version": 5,
-    "updatedAt": "2026-06-30T21:56:47.308Z",
+    "version": 6,
+    "updatedAt": "2026-06-30T22:18:04.274Z",
     "updatedBy": "khif"
   },
   "config": {
     "fontSizes": {
-      "kicker": 2,
-      "title": 6,
+      "kicker": 2.2,
+      "title": 6.5,
       "text": 3,
       "footer": 1.3
     }
