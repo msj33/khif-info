@@ -37,10 +37,9 @@ button:disabled { opacity:.55; cursor:not-allowed; }
 .status-card { margin-bottom:20px; }
 .status-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
 .status-label { margin:0 0 6px; color:var(--muted); font-size:.9rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
-.status-value { margin:0; font-size:1.5rem; font-weight:900; }
+.status-value { margin:0; font-size:1.35rem; font-weight:900; }
 .status-detail { margin:6px 0 0; color:var(--muted); font-size:.95rem; overflow-wrap:anywhere; }
-.status-detail a { color:var(--accent); }
-.status-pill { display:inline-block; margin:0; padding:8px 12px; border-radius:999px; font-weight:900; }
+.status-pill { display:inline-block; margin:8px 0 0; padding:8px 12px; border-radius:999px; font-weight:900; }
 .status-pill.neutral { background:#334155; color:var(--fg); }
 .status-pill.ok { background:rgba(134,239,172,.16); color:var(--ok); }
 .status-pill.pending { background:rgba(253,230,138,.14); color:var(--warn); }
