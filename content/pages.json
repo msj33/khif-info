@@ -98,7 +98,7 @@
       "backgroundColor": "#365314",
       "textColor": "#f7fee7",
       "accentColor": "#bef264",
-      "image": ""
+      "image": "/khif-info/assets/uploads/1782856606067-733499575-1510539537316323-4246480027590.jpg"
     },
     {
       "enabled": true,
@@ -113,8 +113,8 @@
     }
   ],
   "meta": {
-    "version": 4,
-    "updatedAt": "2026-06-30T21:54:50.517Z",
+    "version": 5,
+    "updatedAt": "2026-06-30T21:56:47.308Z",
     "updatedBy": "khif"
   },
   "config": {
