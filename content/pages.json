@@ -25,9 +25,9 @@
     },
     {
       "enabled": true,
-      "kicker": "Floorball - Info",
-      "title": "Nyt Floorball hold 🏑",
-      "text": "Vi forsøger at starte nyt floorball hold i KHIF\n\nVil du være med?\n\nKontakt Mads Jensen på mj@gmail.com",
+      "kicker": "Volleyball - Info",
+      "title": "Så starter Volley-sæsonen 🏐",
+      "text": "Vi spiller Volley hver Torsdag fra 20.00-22.00\n\nVil du være med?\n\nBar emøde op eller kontakt\nMichael Feile - michaelfeile@gmail.com / Mobil: 31181191",
       "footer": "",
       "backgroundColor": "#1e3a8a",
       "textColor": "#eff6ff",
@@ -113,8 +113,8 @@
     }
   ],
   "meta": {
-    "version": 6,
-    "updatedAt": "2026-06-30T22:18:04.274Z",
+    "version": 7,
+    "updatedAt": "2026-06-30T22:40:33.647Z",
     "updatedBy": "khif"
   },
   "config": {
