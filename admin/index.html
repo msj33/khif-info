@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KHIF Info Admin</title>
-  <link rel="stylesheet" href="./admin.css?v=3" />
+  <link rel="stylesheet" href="./admin.css?v=4" />
 </head>
 <body>
   <main class="shell">
@@ -19,13 +19,36 @@
     <section id="loginPanel" class="card">
       <h2>Log ind</h2>
       <p>Brug det fælles redaktør-login. Passwordet bruges også til at låse GitHub-adgangen op lokalt i browseren.</p>
-      <label>Brugernavn<input id="username" autocomplete="username" placeholder="redaktor" /></label>
+      <label>Brugernavn<input id="username" autocomplete="username" placeholder="khif" /></label>
       <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
       <button id="loginButton" type="button">Log ind</button>
       <p id="loginMessage" class="message">Admin-script indlæses…</p>
     </section>
 
     <section id="editorPanel" class="hidden">
+      <section class="card status-card">
+        <div class="status-grid">
+          <div>
+            <p class="status-label">Senest gemt i GitHub</p>
+            <p id="repoVersion" class="status-value">-</p>
+            <p id="repoUpdated" class="status-detail">-</p>
+          </div>
+          <div>
+            <p class="status-label">Deployed på GitHub Pages</p>
+            <p id="deployedVersion" class="status-value">-</p>
+            <p id="deployedUpdated" class="status-detail">-</p>
+          </div>
+          <div>
+            <p class="status-label">Status</p>
+            <p id="deployStatus" class="status-pill neutral">Ukendt</p>
+            <p id="commitLink" class="status-detail"></p>
+          </div>
+        </div>
+        <div class="actions compact">
+          <button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button>
+        </div>
+      </section>
+
       <div class="layout">
         <nav id="pageTabs" class="tabs"></nav>
         <form id="editorForm" class="card editor">
@@ -49,7 +72,7 @@
       </div>
     </section>
   </main>
-  <script src="./secret.js?v=3"></script>
-  <script src="./admin.js?v=3"></script>
+  <script src="./secret.js?v=4"></script>
+  <script src="./admin.js?v=4"></script>
 </body>
 </html>
