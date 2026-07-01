@@ -10,7 +10,8 @@
       "backgroundColor": "#111827",
       "textColor": "#f9fafb",
       "accentColor": "#f59e0b",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -98,7 +99,11 @@
       "backgroundColor": "#365314",
       "textColor": "#f7fee7",
       "accentColor": "#bef264",
-      "image": "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg"
+      "image": "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg",
+      "images": [
+        "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg",
+        "/khif-info/assets/uploads/1782943644969-733499575-1510539537316323-4246480027590.jpg"
+      ]
     },
     {
       "enabled": true,
@@ -124,8 +129,8 @@
     }
   ],
   "meta": {
-    "version": 13,
-    "updatedAt": "2026-07-01T21:38:56.061Z",
+    "version": 14,
+    "updatedAt": "2026-07-01T22:07:26.429Z",
     "updatedBy": "khif"
   },
   "config": {
