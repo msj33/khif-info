@@ -22,7 +22,8 @@
       "backgroundColor": "#064e3b",
       "textColor": "#ecfdf5",
       "accentColor": "#34d399",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -77,7 +78,8 @@
       "backgroundColor": "#831843",
       "textColor": "#fdf2f8",
       "accentColor": "#f9a8d4",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -88,7 +90,8 @@
       "backgroundColor": "#164e63",
       "textColor": "#ecfeff",
       "accentColor": "#67e8f9",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -114,23 +117,25 @@
       "backgroundColor": "#0f172a",
       "textColor": "#f8fafc",
       "accentColor": "#38bdf8",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
       "kicker": "Gymnastik - Info",
       "title": "Sommer-hold er oprettet 🤸",
-      "text": "Sommerholdende er oprette og i kan tilmelde jer fra 6 April\n\nSommer-sæsonen var fra Uge 17 - 26\n\nTjek KHIF Gymnastiks hjemmeside for mere info",
+      "text": "Sommerholdende er nu oprettet og i kan tilmelde jer fra 6 April\n\nSommer-sæsonen var fra Uge 17 - 26\n\nTjek KHIF Gymnastiks hjemmeside for mere info",
       "footer": "",
       "backgroundColor": "#111827",
       "textColor": "#f9fafb",
       "accentColor": "#f59e0b",
-      "image": ""
+      "image": "",
+      "images": []
     }
   ],
   "meta": {
-    "version": 14,
-    "updatedAt": "2026-07-01T22:07:26.429Z",
+    "version": 15,
+    "updatedAt": "2026-07-01T22:27:25.880Z",
     "updatedBy": "khif"
   },
   "config": {
