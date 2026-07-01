@@ -124,14 +124,14 @@
     }
   ],
   "meta": {
-    "version": 10,
-    "updatedAt": "2026-07-01T21:03:58.090Z",
+    "version": 11,
+    "updatedAt": "2026-07-01T21:08:00.654Z",
     "updatedBy": "khif"
   },
   "config": {
     "fontSizes": {
       "kicker": 2.2,
-      "title": 6.2,
+      "title": 9,
       "text": 3,
       "footer": 1.3
     }
