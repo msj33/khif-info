@@ -5,71 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="google" content="notranslate" />
   <title>KHIF Info Admin</title>
-  <link rel="stylesheet" href="./admin.css?v=6" />
+  <link rel="stylesheet" href="./admin.css?v=7" />
 </head>
 <body class="notranslate">
   <main class="shell">
-    <header class="topbar">
-      <div><p class="eyebrow">Admin</p><h1>KHIF Info</h1></div>
-      <button id="logoutButton" type="button" class="secondary hidden">Log ud</button>
-    </header>
-
-    <section id="loginPanel" class="card">
-      <h2>Log ind</h2>
-      <p>Brug det fælles redaktør-login.</p>
-      <label>Brugernavn<input id="username" autocomplete="username" placeholder="khif" /></label>
-      <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
-      <button id="loginButton" type="button">Log ind</button>
-      <p id="loginMessage" class="message">Admin-script indlæses…</p>
-    </section>
-
+    <header class="topbar"><div><p class="eyebrow">Admin</p><h1>KHIF Info</h1></div><button id="logoutButton" type="button" class="secondary hidden">Log ud</button></header>
+    <section id="loginPanel" class="card"><h2>Log ind</h2><p>Brug det fælles redaktør-login.</p><label>Brugernavn<input id="username" autocomplete="username" placeholder="khif" /></label><label>Password<input id="password" type="password" autocomplete="current-password" /></label><button id="loginButton" type="button">Log ind</button><p id="loginMessage" class="message">Admin-script indlæses…</p></section>
     <section id="editorPanel" class="hidden">
-      <section class="card status-card">
-        <div class="status-grid">
-          <div><p class="status-label">Senest gemt i GitHub</p><p id="repoVersion" class="status-value">-</p><p id="repoUpdated" class="status-detail">-</p></div>
-          <div><p class="status-label">Aktuel version på GitHub Pages</p><p id="deployedVersion" class="status-value">-</p><p id="deployedChecked" class="status-detail">-</p></div>
-          <div><p class="status-label">Forventet på infoskærmen</p><p id="screenEta" class="status-value">-</p><p id="deployStatus" class="status-pill neutral">Ukendt</p></div>
-        </div>
-        <div class="actions compact"><button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button></div>
-      </section>
-
-      <div class="layout">
-        <aside class="side-menu">
-          <nav id="pageTabs" class="tabs"></nav>
-          <div class="side-actions"><button type="button" id="addPageButton" class="secondary">+ Tilføj page</button><button type="button" id="removePageButton" class="danger">Fjern page</button></div>
-        </aside>
-
+      <section class="card status-card"><div class="status-grid"><div><p class="status-label">Senest gemt i GitHub</p><p id="repoVersion" class="status-value">-</p><p id="repoUpdated" class="status-detail">-</p></div><div><p class="status-label">Aktuel version på GitHub Pages</p><p id="deployedVersion" class="status-value">-</p><p id="deployedChecked" class="status-detail">-</p></div><div><p class="status-label">Forventet på infoskærmen</p><p id="screenEta" class="status-value">-</p><p id="deployStatus" class="status-pill neutral">Ukendt</p></div></div><div class="actions compact"><button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button></div></section>
+      <div class="layout"><aside class="side-menu"><nav id="pageTabs" class="tabs"></nav><div class="side-actions"><button type="button" id="addPageButton" class="secondary">+ Tilføj page</button><button type="button" id="removePageButton" class="danger">Fjern page</button></div></aside>
         <form id="editorForm" class="card editor">
-          <section id="basisConfigPanel" class="hidden">
-            <h2>Basis Config</h2>
-            <p class="muted">Globale skriftstørrelser for alle pages. Værdier er i rem og slår igennem på infoskærmen, når content opdateres.</p>
-            <div class="grid">
-              <label>Lille overskrift <span id="kickerSizeValue" class="value-pill"></span><input id="fontKicker" type="range" min="0.8" max="4" step="0.1" /></label>
-              <label>Titel <span id="titleSizeValue" class="value-pill"></span><input id="fontTitle" type="range" min="2" max="9" step="0.1" /></label>
-              <label>Tekst <span id="textSizeValue" class="value-pill"></span><input id="fontText" type="range" min="1" max="5" step="0.1" /></label>
-              <label>Footer <span id="footerSizeValue" class="value-pill"></span><input id="fontFooter" type="range" min="0.7" max="3" step="0.1" /></label>
-            </div>
-          </section>
-
-          <section id="pageEditorPanel">
-            <div class="row"><label class="check"><input id="enabled" type="checkbox" /> Aktiv</label></div>
-            <label>Lille overskrift<input id="kicker" /></label>
-            <label>Titel<input id="title" required /></label>
-            <label>Tekst<textarea id="text" rows="5"></textarea></label>
-            <label>Footer<input id="footer" /></label>
-            <div class="grid"><label>Baggrundsfarve<input id="backgroundColor" type="color" /></label><label>Tekstfarve<input id="textColor" type="color" /></label><label>Accentfarve<input id="accentColor" type="color" /></label></div>
-            <label>Billede-URL<input id="image" placeholder="https://... eller /khif-info/assets/uploads/..." /></label>
-            <label>Upload billede<input id="imageUpload" type="file" accept="image/*" /></label>
-            <p id="uploadHint" class="message">Vælg et billede og tryk Gem. Billedet uploades og sættes på den valgte page.</p>
-          </section>
-
-          <div class="actions"><button type="submit">Gem ændringer</button><button type="button" id="previewButton" class="secondary">Preview side</button></div>
-          <p id="saveMessage" class="message"></p>
-        </form>
-      </div>
+          <section id="basisConfigPanel" class="hidden"><h2>Basis Config</h2><p class="muted">Globale skriftstørrelser og mediebibliotek.</p><div class="grid"><label>Lille overskrift <span id="kickerSizeValue" class="value-pill"></span><input id="fontKicker" type="range" min="0.8" max="4" step="0.1" /></label><label>Titel <span id="titleSizeValue" class="value-pill"></span><input id="fontTitle" type="range" min="2" max="9" step="0.1" /></label><label>Tekst <span id="textSizeValue" class="value-pill"></span><input id="fontText" type="range" min="1" max="5" step="0.1" /></label><label>Footer <span id="footerSizeValue" class="value-pill"></span><input id="fontFooter" type="range" min="0.7" max="3" step="0.1" /></label></div><hr/><div class="media-head"><h3>Billeder i repoet</h3><button type="button" id="refreshMediaButton" class="secondary">Genindlæs liste</button></div><div id="mediaLibrary" class="media-library"><p class="message">Logger ind…</p></div></section>
+          <section id="pageEditorPanel"><div class="row"><label class="check"><input id="enabled" type="checkbox" /> Aktiv</label></div><label>Lille overskrift<input id="kicker" class="emoji-target" /></label><label>Titel<input id="title" class="emoji-target" required /></label><label>Tekst<textarea id="text" class="emoji-target" rows="5"></textarea></label><div class="emoji-panel" id="emojiPanel"></div><label>Footer<input id="footer" class="emoji-target" /></label><div class="grid"><label>Baggrundsfarve<input id="backgroundColor" type="color" /></label><label>Tekstfarve<input id="textColor" type="color" /></label><label>Accentfarve<input id="accentColor" type="color" /></label></div><label>Billede-URL<input id="image" placeholder="https://... eller /khif-info/assets/uploads/..." /></label><label>Vælg eksisterende billede<select id="existingImage"><option value="">Ingen / vælg billede</option></select></label><label>Upload billede<input id="imageUpload" type="file" accept="image/*" /></label><p class="message">Vælg et eksisterende billede, indsæt URL eller upload nyt billede.</p></section>
+          <div class="actions"><button type="submit">Gem ændringer</button><button type="button" id="previewButton" class="secondary">Preview aktuel page 1920×1080</button></div><p id="saveMessage" class="message"></p>
+        </form></div>
     </section>
   </main>
-  <script src="./secret.js?v=6"></script>
-  <script src="./admin.js?v=6"></script>
+  <script src="./secret.js?v=7"></script><script src="./admin.js?v=7"></script>
 </body>
 </html>
