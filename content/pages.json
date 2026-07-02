@@ -29,12 +29,13 @@
       "enabled": true,
       "kicker": "Volleyball - Info",
       "title": "Så starter Volley-sæsonen 🏐",
-      "text": "Vi spiller Volley hver Torsdag fra 20.00-22.00\n\nVil du være med?\n\nBare mød op eller kontakt\nMichael Feile - michaelfeile@gmail.com / Mobil: 31181191",
+      "text": "Vi spiller volleyball hver torsdag fra 20.00-22.00\n\nVil du være med?\n\nBare mød op eller kontakt\nMichael Feile - michaelfeile@gmail.com / Mobil: 31181191",
       "footer": "",
       "backgroundColor": "#1e3a8a",
       "textColor": "#eff6ff",
       "accentColor": "#93c5fd",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -57,7 +58,8 @@
       "backgroundColor": "#292524",
       "textColor": "#fafaf9",
       "accentColor": "#fbbf24",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -68,7 +70,8 @@
       "backgroundColor": "#7c2d12",
       "textColor": "#fff7ed",
       "accentColor": "#fdba74",
-      "image": ""
+      "image": "",
+      "images": []
     },
     {
       "enabled": true,
@@ -135,8 +138,8 @@
     }
   ],
   "meta": {
-    "version": 24,
-    "updatedAt": "2026-07-02T16:33:01.776Z",
+    "version": 25,
+    "updatedAt": "2026-07-02T16:33:44.426Z",
     "updatedBy": "khif"
   },
   "config": {
