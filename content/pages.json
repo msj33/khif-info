@@ -125,7 +125,7 @@
       "enabled": true,
       "kicker": "Gymnastik - Info",
       "title": "Sommer-hold er oprettet 🤸",
-      "text": "Sommerholdende er nu oprettet og i kan tilmelde jer fra 6 April\n\nSommer-sæsonen var fra Uge 17 - 26\n\nTjek KHIF Gymnastiks hjemmeside for mere info",
+      "text": "Sommerholdene er nu oprettet og I kan tilmelde jer fra 6. april\n\nSommer-sæsonen var fra uge 17 - 26\n\nTjek KHIF Gymnastiks hjemmeside for mere info",
       "footer": "",
       "backgroundColor": "#111827",
       "textColor": "#f9fafb",
@@ -135,8 +135,8 @@
     }
   ],
   "meta": {
-    "version": 20,
-    "updatedAt": "2026-07-02T16:27:27.957Z",
+    "version": 21,
+    "updatedAt": "2026-07-02T16:32:14.343Z",
     "updatedBy": "khif"
   },
   "config": {
