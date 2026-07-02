@@ -3,18 +3,6 @@
   "pages": [
     {
       "enabled": true,
-      "kicker": " Fodbold - Kampdag",
-      "title": "Weekendens kampe ⚽",
-      "text": "Kolt-Hasselager IF - Solbjerg\nU14 Drenge - Liga 3 - Søndag 11.00 - Bane 1\nU13 Piger - Liga 4 - Søndag 13.00 - Kunstgræs\nSenior - Serie 3 - søndag 16.00 - Bane 1",
-      "footer": "Kom og hep!",
-      "backgroundColor": "#064e3b",
-      "textColor": "#ecfdf5",
-      "accentColor": "#34d399",
-      "image": "",
-      "images": []
-    },
-    {
-      "enabled": true,
       "kicker": "KHIF - Info",
       "title": "Velkommen 👋",
       "text": "Velkommen til Kolt-Hasselager sportsanlæg💚",
@@ -22,6 +10,18 @@
       "backgroundColor": "#111827",
       "textColor": "#f9fafb",
       "accentColor": "#f59e0b",
+      "image": "",
+      "images": []
+    },
+    {
+      "enabled": true,
+      "kicker": " Fodbold - Kampdag",
+      "title": "Weekendens kampe ⚽",
+      "text": "Kolt-Hasselager IF - Solbjerg\nU14 Drenge - Liga 3 - Søndag 11.00 - Bane 1\nU13 Piger - Liga 4 - Søndag 13.00 - Kunstgræs\nSenior - Serie 3 - søndag 16.00 - Bane 1",
+      "footer": "Kom og hep!",
+      "backgroundColor": "#064e3b",
+      "textColor": "#ecfdf5",
+      "accentColor": "#34d399",
       "image": "",
       "images": []
     },
@@ -139,8 +139,8 @@
     }
   ],
   "meta": {
-    "version": 30,
-    "updatedAt": "2026-07-02T22:28:09.864Z",
+    "version": 31,
+    "updatedAt": "2026-07-02T22:43:02.276Z",
     "updatedBy": "khif"
   },
   "config": {
