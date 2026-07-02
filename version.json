@@ -1,4 +1,4 @@
 {
-  "appVersion": "2026-07-02-04",
-  "note": "Bump når index.html/style.css/script.js/admin-kode ændres. Content pages.json kræver ikke bump."
+  "appVersion": "2026-07-02-05",
+  "note": "Bump når kodefiler ændres. Content pages.json kræver ikke bump."
 }

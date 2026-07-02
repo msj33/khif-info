@@ -7,44 +7,20 @@
   <meta name="google" content="notranslate" />
   <title>KHIF Info</title>
   <script>
-    window.KHIF_BOOT_VERSION = "booting";
-    async function khifLoadApp() {
-      let version = String(Date.now());
-      try {
-        const response = await fetch(`./version.json?t=${Date.now()}`, { cache: "no-store" });
-        if (response.ok) {
-          const json = await response.json();
-          version = String(json.appVersion || version);
-        }
-      } catch (error) {
-        console.warn("Kunne ikke hente version.json, bruger timestamp", error);
-      }
-      window.KHIF_BOOT_VERSION = version;
-
-      const css = document.createElement("link");
-      css.rel = "stylesheet";
-      css.href = `./style.css?t=${encodeURIComponent(version)}`;
-      document.head.appendChild(css);
-
-      const script = document.createElement("script");
-      script.src = `./script.js?t=${encodeURIComponent(version)}`;
-      script.defer = true;
-      document.body.appendChild(script);
+    window.KHIF_BOOT_VERSION="booting";
+    async function khifLoadApp(){
+      let version=String(Date.now());
+      try{const r=await fetch(`./version.json?t=${Date.now()}`,{cache:"no-store"});if(r.ok){const j=await r.json();version=String(j.appVersion||version)}}catch(e){console.warn("Kunne ikke hente version.json",e)}
+      window.KHIF_BOOT_VERSION=version;
+      const css=document.createElement("link");css.rel="stylesheet";css.href=`./style.css?t=${encodeURIComponent(version)}`;document.head.appendChild(css);
+      const js=document.createElement("script");js.src=`./script.js?t=${encodeURIComponent(version)}`;js.defer=true;document.body.appendChild(js);
     }
     khifLoadApp();
   </script>
 </head>
 <body class="notranslate">
-  <main id="app" class="screen" aria-live="polite">
-    <section class="slide"><div class="slide-copy"><p class="eyebrow">Indlæser…</p><h1>KHIF Info</h1><p class="body">Henter indhold.</p></div></section>
-  </main>
-  <div id="updateOverlay" class="update-overlay hidden" aria-live="assertive" aria-hidden="true">
-    <div class="update-card">
-      <div class="update-spinner" aria-hidden="true"></div>
-      <h2>Modtager nyhedsopdateringer</h2>
-      <p>Infoskærmen opdateres og starter igen fra side 1.</p>
-    </div>
-  </div>
+  <main id="app" class="screen" aria-live="polite"><section class="slide"><div class="slide-copy"><p class="eyebrow">Indlæser…</p><h1>KHIF Info</h1><p class="body">Henter indhold.</p></div></section></main>
+  <div id="updateOverlay" class="update-overlay hidden" aria-live="assertive" aria-hidden="true"><div class="update-card"><div class="update-spinner" aria-hidden="true"></div><h2>Modtager nyhedsopdateringer</h2><p>Infoskærmen opdateres og starter igen fra side 1.</p></div></div>
   <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
 </body>
 </html>
