@@ -1,0 +1,4 @@
+{
+  "appVersion": "2026-07-02-03",
+  "note": "Bump når index.html, style.css eller script.js ændres. Content pages.json kræver ikke bump."
+}
