@@ -1,1 +1,136 @@
-<!doctype html><html lang="da"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>KHIF Info Admin</title><link rel="stylesheet" href="./admin.css"/></head><body><main class="shell"><p class="message">Denne pakke indeholder primært root-opdatering. Behold din eksisterende admin/index.html hvis admin virker.</p></main><script src="./secret.js"></script><script src="./emoji-catalog.js"></script><script src="./admin.js"></script></body></html>
+<!doctype html>
+<html lang="da" class="notranslate" translate="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="google" content="notranslate" />
+  <title>KHIF Info Admin</title>
+  <link rel="stylesheet" href="./admin.css" />
+</head>
+<body class="notranslate">
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h1>KHIF Info</h1>
+      </div>
+      <button id="logoutButton" type="button" class="secondary hidden">Log ud</button>
+    </header>
+
+    <section id="loginPanel" class="card">
+      <h2>Log ind</h2>
+      <p>Brug det fælles redaktør-login.</p>
+      <label>Brugernavn<input id="username" autocomplete="username" placeholder="khif" /></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
+      <button id="loginButton" type="button">Log ind</button>
+      <p id="loginMessage" class="message">Admin-script indlæses…</p>
+    </section>
+
+    <section id="editorPanel" class="hidden">
+      <section class="card status-card">
+        <div class="status-grid">
+          <div>
+            <p class="status-label">Senest gemt i GitHub</p>
+            <p id="repoVersion" class="status-value">-</p>
+            <p id="repoUpdated" class="status-detail">-</p>
+          </div>
+          <div>
+            <p class="status-label">Aktuel version på GitHub Pages</p>
+            <p id="deployedVersion" class="status-value">-</p>
+            <p id="deployedChecked" class="status-detail">-</p>
+          </div>
+          <div>
+            <p class="status-label">Forventet på infoskærmen</p>
+            <p id="screenEta" class="status-value">-</p>
+            <p id="deployStatus" class="status-pill neutral">Ukendt</p>
+          </div>
+        </div>
+        <div class="actions compact">
+          <button type="button" id="saveToScreenButton">Gem til infoskærm</button>
+          <button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button>
+          <button type="button" id="previewAllButton" class="secondary">Preview alle</button>
+        </div>
+        <p id="topSaveMessage" class="message"></p>
+      </section>
+
+      <div class="layout">
+        <aside class="side-menu">
+          <nav id="pageTabs" class="tabs"></nav>
+          <p class="drag-hint">Tip: Træk sider op/ned for at ændre rækkefølgen.</p>
+          <div class="side-actions">
+            <button type="button" id="addPageButton" class="secondary">+ Tilføj side</button>
+            <button type="button" id="removePageButton" class="danger">Fjern side</button>
+          </div>
+        </aside>
+
+        <form id="editorForm" class="card editor">
+          <section id="basisConfigPanel" class="hidden">
+            <h2>Basis Config</h2>
+            <p class="muted">Globale skriftstørrelser og mediebibliotek.</p>
+            <div class="grid">
+              <label>Lille overskrift <span id="kickerSizeValue" class="value-pill"></span><input id="fontKicker" type="range" min="0.8" max="4" step="0.1" /></label>
+              <label>Titel <span id="titleSizeValue" class="value-pill"></span><input id="fontTitle" type="range" min="2" max="9" step="0.1" /></label>
+              <label>Tekst <span id="textSizeValue" class="value-pill"></span><input id="fontText" type="range" min="1" max="5" step="0.1" /></label>
+              <label>Footer <span id="footerSizeValue" class="value-pill"></span><input id="fontFooter" type="range" min="0.7" max="3" step="0.1" /></label>
+            </div>
+            <hr />
+            <div class="media-head">
+              <h3>Billeder i repoet</h3>
+              <button type="button" id="refreshMediaButton" class="secondary">Genindlæs liste</button>
+            </div>
+            <div id="mediaLibrary" class="media-library"><p class="message">Logger ind…</p></div>
+          </section>
+
+          <section id="pageEditorPanel">
+            <div class="row"><label class="check"><input id="enabled" type="checkbox" /> Aktiv</label></div>
+            <label>Lille overskrift<input id="kicker" class="emoji-target" /></label>
+            <label>Titel<input id="title" class="emoji-target" required /></label>
+            <label>Tekst<textarea id="text" class="emoji-target" rows="5"></textarea></label>
+            <div class="actions compact"><button id="emojiButton" type="button" class="secondary">Indsæt emoji</button></div>
+            <label>Footer<input id="footer" class="emoji-target" /></label>
+            <div class="grid">
+              <label>Baggrundsfarve<input id="backgroundColor" type="color" /></label>
+              <label>Tekstfarve<input id="textColor" type="color" /></label>
+              <label>Accentfarve<input id="accentColor" type="color" /></label>
+            </div>
+
+            <div class="image-slots">
+              <div class="image-slot"><label>Billede 1<input id="image1" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage1" type="button" class="secondary">Vælg…</button><button id="uploadImage1" type="button" class="secondary">Upload</button></div></div>
+              <div class="image-slot"><label>Billede 2<input id="image2" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage2" type="button" class="secondary">Vælg…</button><button id="uploadImage2" type="button" class="secondary">Upload</button></div></div>
+              <div class="image-slot"><label>Billede 3<input id="image3" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage3" type="button" class="secondary">Vælg…</button><button id="uploadImage3" type="button" class="secondary">Upload</button></div></div>
+            </div>
+            <div class="actions compact"><button id="clearImagesButton" type="button" class="secondary">Fjern alle billeder fra side</button></div>
+            <input id="uploadSlot" type="hidden" value="0" />
+            <input id="imageUpload" class="hidden" type="file" accept="image/*" />
+          </section>
+          <div class="actions"><button type="button" id="previewButton" class="secondary">Preview aktuel side</button></div>
+          <p id="saveMessage" class="message"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dev-footer">Udviklet af Morten Stensgaard - Kontakt stensgaard@gmail.com for ændringsønsker til KHIF-info</footer>
+
+  <div id="imageModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2>Vælg billede</h2><button id="closeImageModal" type="button" class="secondary">Luk</button></div><div id="imagePickerGrid" class="media-library"></div></div></div>
+
+  <div id="emojiModal" class="modal hidden"><div class="modal-card wide"><div class="modal-head"><h2>Indsæt emoji</h2><button id="closeEmojiModal" type="button" class="secondary">Luk</button></div><input id="emojiSearch" placeholder="Søg fx bold, fodbold, glad, kalender…" /><div id="emojiGrid" class="emoji-grid"></div></div></div>
+
+  <div id="uploadGuidelinesModal" class="modal hidden">
+    <div class="modal-card guidelines-card">
+      <h2>Upload af billede</h2>
+      <p class="muted">Klubben har 3 simple guidelines:</p>
+      <ol class="guidelines">
+        <li><strong>OK</strong> – Situations-billeder i foreningssammenhæng<br /><span>Kampbillede, holdbillede mm.</span></li>
+        <li><strong>Check</strong> – Portræt/enkelt-billeder<br /><span>Der skal indhentes samtykke fra den enkelte deltager.</span></li>
+        <li><strong>Undgå</strong> – Pinlige, udstillende og/eller sårbare billeder</li>
+      </ol>
+      <div class="actions"><button type="button" id="acceptUploadGuidelines">Accepter og fortsæt</button><button type="button" id="cancelUploadGuidelines" class="secondary">Annuller</button></div>
+    </div>
+  </div>
+
+  <script src="./secret.js"></script>
+  <script src="./emoji-catalog.js"></script>
+  <script src="./admin.js"></script>
+</body>
+</html>
