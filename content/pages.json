@@ -4,7 +4,7 @@
     {
       "enabled": true,
       "kicker": "KHIF - Info",
-      "title": "Velkommen 👋",
+      "title": "Velkommen 👋👋",
       "text": "Velkommen til Kolt-Hasselager sportsanlæg💚",
       "footer": "KHIF Info",
       "backgroundColor": "#111827",
@@ -139,8 +139,8 @@
     }
   ],
   "meta": {
-    "version": 41,
-    "updatedAt": "2026-07-03T10:23:31.071Z",
+    "version": 42,
+    "updatedAt": "2026-07-03T10:58:06.135Z",
     "updatedBy": "khif"
   },
   "config": {
