@@ -1,0 +1,14 @@
+{
+  "deviceId": "khif-infoscreen-01",
+  "status": "offline",
+  "lastSeen": "",
+  "hostname": "",
+  "uptimeSeconds": 0,
+  "temperatureC": null,
+  "browser": "unknown",
+  "currentUrl": "https://msj33.github.io/khif-info/",
+  "lastCommandId": "",
+  "lastCommand": "",
+  "lastCommandResult": "",
+  "lastError": "Agent ikke installeret endnu"
+}

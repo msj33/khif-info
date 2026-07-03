@@ -1,0 +1,18 @@
+[Unit]
+Description=KHIF Info Raspberry Pi Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=KHIF_GITHUB_OWNER=msj33
+Environment=KHIF_GITHUB_REPO=khif-info
+Environment=KHIF_GITHUB_BRANCH=main
+Environment=KHIF_DEVICE_ID=khif-infoscreen-01
+ExecStart=/usr/bin/python3 /opt/khif-agent/khif-agent.py
+Restart=always
+RestartSec=10
+User=root
+
+[Install]
+WantedBy=multi-user.target
