@@ -10,37 +10,18 @@
 <body class="notranslate">
   <main class="shell">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">Superadmin</p>
-        <h1>KHIF Info</h1>
-        <p class="subtitle">Raspberry Pi status og hardware-kontrol</p>
-      </div>
-      <nav class="toplinks">
-        <a href="../admin/">Admin</a>
-        <a href="../">Infoskærm</a>
-        <button id="logoutButton" type="button" class="secondary hidden">Log ud</button>
-      </nav>
+      <div><p class="eyebrow">Superadmin</p><h1>KHIF Info</h1><p class="subtitle">Raspberry Pi status og hardware-kontrol</p></div>
+      <nav class="toplinks"><a href="../admin/">Admin</a><a href="../">Infoskærm</a><button id="logoutButton" type="button" class="secondary hidden">Log ud</button></nav>
     </header>
-
     <section id="loginPanel" class="card login-card">
-      <h2>Log ind</h2>
-      <p>Brug samme login som til <code>/admin</code>.</p>
+      <h2>Log ind</h2><p>Brug samme login som til <code>/admin</code>.</p>
       <label>Brugernavn<input id="username" autocomplete="username" placeholder="khif" /></label>
       <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
-      <button id="loginButton" type="button">Log ind</button>
-      <p id="loginMessage" class="message">Superadmin-script indlæses…</p>
+      <button id="loginButton" type="button">Log ind</button><p id="loginMessage" class="message">Superadmin-script indlæses…</p>
     </section>
-
     <section id="superPanel" class="hidden">
       <section class="card status-card">
-        <div class="status-head">
-          <div>
-            <p class="status-label">Raspberry Pi</p>
-            <h2 id="deviceTitle">khif-infoscreen-01</h2>
-          </div>
-          <p id="onlinePill" class="status-pill neutral">Ukendt</p>
-        </div>
-
+        <div class="status-head"><div><p class="status-label">Raspberry Pi</p><h2 id="deviceTitle">khif-infoscreen-01</h2></div><p id="onlinePill" class="status-pill neutral">Ukendt</p></div>
         <div class="status-grid">
           <div><p class="status-label">Sidst set</p><p id="lastSeen" class="status-value">-</p></div>
           <div><p class="status-label">Hostname</p><p id="hostname" class="status-value">-</p></div>
@@ -48,33 +29,13 @@
           <div><p class="status-label">Temperatur</p><p id="temperature" class="status-value">-</p></div>
           <div><p class="status-label">Browser</p><p id="browser" class="status-value">-</p></div>
           <div><p class="status-label">Seneste kommando</p><p id="lastCommand" class="status-value">-</p></div>
-        </div>
-
-        <p id="lastError" class="message"></p>
+        </div><p id="lastError" class="message"></p>
       </section>
-
-      <section class="card">
-        <h2>Hardware-kontrol</h2>
-        <p class="muted">Kommandoer sendes via GitHub og udføres af agenten på Raspberry Pi’en.</p>
-        <div class="actions">
-          <button id="reloadPageButton" type="button" class="secondary">Reload infoskærm</button>
-          <button id="restartBrowserButton" type="button" class="secondary">Genstart browser</button>
-          <button id="rebootPiButton" type="button" class="danger">Genstart Raspberry Pi</button>
-        </div>
-        <p id="commandMessage" class="message"></p>
-      </section>
-
-      <section class="card raw-card">
-        <details>
-          <summary>Teknisk status JSON</summary>
-          <pre id="rawStatus">{}</pre>
-        </details>
-      </section>
+      <section class="card"><h2>Hardware-kontrol</h2><p class="muted">Kommandoer sendes via GitHub og udføres af agenten på Raspberry Pi’en.</p><div class="actions"><button id="reloadPageButton" type="button" class="secondary">Reload infoskærm</button><button id="restartBrowserButton" type="button" class="secondary">Genstart browser</button><button id="rebootPiButton" type="button" class="danger">Genstart Raspberry Pi</button></div><p id="commandMessage" class="message"></p></section>
+      <section class="card raw-card"><details><summary>Teknisk status JSON</summary><pre id="rawStatus">{}</pre></details></section>
     </section>
   </main>
-
   <footer class="dev-footer">KHIF Info Superadmin</footer>
-
   <script src="../admin/secret.js"></script>
   <script src="./superadmin.js"></script>
 </body>

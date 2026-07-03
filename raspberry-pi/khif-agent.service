@@ -9,7 +9,7 @@ Environment=KHIF_GITHUB_OWNER=msj33
 Environment=KHIF_GITHUB_REPO=khif-info
 Environment=KHIF_GITHUB_BRANCH=main
 Environment=KHIF_DEVICE_ID=khif-infoscreen-01
-ExecStart=/usr/bin/python3 /opt/khif-agent/khif-agent.py
+ExecStart=/bin/bash /opt/khif-agent/khif-agent.sh
 Restart=always
 RestartSec=10
 User=root
