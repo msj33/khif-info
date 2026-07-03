@@ -1,4 +1,4 @@
 {
-  "appVersion": "2026-07-02-06",
-  "note": "Bump når index.html/style.css/script.js ændres. Content pages.json kræver ikke bump."
+  "appVersion": "2026-07-03-01",
+  "note": "Content refresh interval changed to 1 minute. Bump when index.html/style.css/script.js changes."
 }
