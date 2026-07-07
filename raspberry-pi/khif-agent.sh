@@ -67,7 +67,7 @@ api_get_file(){
   _curl_with_error "${API_ROOT}/${path}" -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${token}" -H "X-GitHub-Api-Version: 2022-11-28"
 }
 api_put_json_file(){
-  local path="$1" json_file="$2" token sha content body_file api_response
+  local path="$1" json_file="$2" token sha="" content body_file api_response
   token="$(read_token)" || { last_agent_error="Failed to read token file: $TOKEN_FILE"; return 1; }
   api_response="$(api_get_file "$path")"
   local get_file_status=$?
@@ -87,7 +87,7 @@ api_put_json_file(){
 
   content="$(base64 -w 0 "$json_file")"
   body_file="$(mktemp)"
-  if [[ -n "$sha" ]]; then
+  if [[ -n "${sha:-}" ]]; then
     echo "{\"message\":\"Update ${path} from ${DEVICE_ID}\",\"content\":\"${content}\",\"sha\":\"${sha}\",\"branch\":\"${BRANCH}\"}" > "$body_file"
   else
     echo "{\"message\":\"Create ${path} from ${DEVICE_ID}\",\"content\":\"${content}\",\"branch\":\"${BRANCH}\"}" > "$body_file"
