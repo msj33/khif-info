@@ -76,8 +76,8 @@ api_put_json_file(){
   # A 404 is acceptable for a new file.
   if [[ $get_file_status -ne 0 ]]; then
     if ! printf '%s' "$last_agent_error" | grep -q 'Not Found'; then
-      log "Error getting SHA for $path, not attempting PUT: $last_agent_error"
-      return 1
+      log "Error getting SHA for $path, proceeding with create: $last_agent_error"
+      # Do not return here, allow the PUT operation to proceed with an empty SHA
     else
       last_agent_error="" # Clear 404 Not Found error as it's expected for create
     fi
