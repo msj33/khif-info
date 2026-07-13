@@ -60,10 +60,7 @@ read_token(){
 }
 
 json_escape(){
-  python3 - <<'PY'
-import json, sys
-sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])
-PY
+  printf '%s' "$1" | python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])'
 }
 
 json_get_string(){
@@ -304,6 +301,10 @@ write_status(){
   browser="$(browser_status)"
   screen_power="$(screen_power_state)"
   last_id="$(last_command_id)"
+
+  hostname="${hostname:-'-'}"
+  browser="${browser:-not-running}"
+  screen_power="${screen_power:-unknown}"
 
   if [[ -n "$temp" ]]; then
     temp_json="$temp"
