@@ -307,8 +307,10 @@ fetch_command_json(){
     "${RAW_ROOT}/${COMMAND_PATH}?t=$(date +%s)" \
     2>/dev/null || true)
 
-  if [[ -z "$response" ]]; then
-    log "fetch_command_json: empty response"
+  local trimmed
+  trimmed="$(printf '%s' "$response" | tr -d '[:space:]')"
+  if [[ -z "$trimmed" ]]; then
+    log "fetch_command_json: empty or whitespace-only response"
     return 0
   fi
 

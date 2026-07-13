@@ -23,8 +23,33 @@ async function decryptToken(password){if(!CONFIG)throw new Error('Admin-konfigur
 function headers(extra={}){return{Accept:'application/vnd.github+json',Authorization:`Bearer ${token}`,'X-GitHub-Api-Version':'2022-11-28',...extra}}
 async function stateContent(path,options={}){const res=await fetch(`https://api.github.com/repos/${STATE_OWNER}/${STATE_REPO}/contents/${path}`,{...options,headers:headers(options.headers||{})});const json=await res.json().catch(()=>({}));if(!res.ok)throw new Error(json.message||`GitHub API fejl ${res.status}`);return json}
 async function repoContent(path,options={}){const method=(options.method||'GET').toUpperCase();const url=`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}${method==='GET'?`?ref=${encodeURIComponent(CONFIG.branch||'main')}`:''}`;const res=await fetch(url,{...options,headers:headers(options.headers||{})});const json=await res.json().catch(()=>({}));if(!res.ok)throw new Error(json.message||`GitHub API fejl ${res.status}`);return json}
-async function readJsonFile(path){const file=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`);return{json:JSON.parse(b64ToUtf8(file.content)),sha:file.sha}}
-async function writeJsonFile(path,obj,sha){const body={message:`Superadmin update ${path}`,content:utf8ToB64(JSON.stringify(obj,null,2)+'\n'),branch:STATE_BRANCH};if(sha)body.sha=sha;const res=await stateContent(path,{method:'PUT',body:JSON.stringify(body)});return res.content?.sha||null}
+async function readJsonFile(path){
+  const file=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+  const encoded=String(file.content||'')
+  let parsed=null
+  if (encoded) {
+    try {
+      parsed=JSON.parse(b64ToUtf8(encoded))
+    } catch (_){
+      parsed=null
+    }
+  }
+  return {json:parsed,sha:file.sha}
+}
+async function writeJsonFile(path,obj,sha){
+  if (!sha) {
+    try {
+      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+      sha=existing.sha
+    } catch (error) {
+      if (!String(error?.message||'').includes('404')) throw error
+    }
+  }
+  const body={message:`Superadmin update ${path}`,content:utf8ToB64(JSON.stringify(obj,null,2)+'\n'),branch:STATE_BRANCH}
+  if(sha)body.sha=sha
+  const res=await stateContent(path,{method:'PUT',body:JSON.stringify(body)})
+  return res.content?.sha||null
+}
 function formatDate(value){if(!value)return'-';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString('da-DK')}
 function formatUptime(seconds){const s=Number(seconds||0);if(!s)return'-';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);return d>0?`${d}d ${h}t ${m}m`:`${h}t ${m}m`}
 function parseTime(value){const [hours,minutes]=String(value||'00:00').split(':').map(Number);return{hours:Number.isNaN(hours)?0:hours,minutes:Number.isNaN(minutes)?0:minutes}}
