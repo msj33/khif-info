@@ -72,6 +72,9 @@ try:
 except json.JSONDecodeError:
     sys.exit(0)
 
+if not isinstance(data, dict):
+    sys.exit(0)
+
 if not data.get('enabled', True):
     sys.exit(0)
 
@@ -102,7 +105,7 @@ for idx, day in enumerate(order):
     else:
         next_day=order[(idx + 1) % len(order)]
         lines.append(f"{em} {eh} * * {cron_day[next_day]} {command_off}")
-lines.append("0 3 * * * /usr/bin/env bash '/opt/khif-agent/khif-agent-schedule.sh'")
+lines.append("0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh")
 for line in lines:
     print(line)
 PY
