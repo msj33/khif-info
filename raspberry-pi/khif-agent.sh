@@ -415,20 +415,37 @@ EOF
 
 
 restart_browser(){
-  pkill -f 'chromium|chromium-browser|chrome' >/dev/null 2>&1 || true
-  sleep 2
+  local display="${DISPLAY:-:0}"
+  local xauth="${XAUTHORITY:-}"
+  local candidate
 
-  /usr/bin/env bash /var/lib/dietpi/dietpi-software/installed/chromium-autostart.sh \
-    >/tmp/khif-browser.log 2>&1 < /dev/null &
-
-  sleep 2
-
-  if pgrep -af 'chromium|chromium-browser|chrome' >/dev/null 2>&1; then
-    printf 'ok: restarted browser via DietPi autostart'
-    return 0
+  if [[ -z "$xauth" ]]; then
+    for candidate in /home/pi/.Xauthority /home/dietpi/.Xauthority /root/.Xauthority; do
+      if [[ -f "$candidate" ]]; then
+        xauth="$candidate"
+        break
+      fi
+    done
   fi
 
-  printf 'error: browser did not start; log: /tmp/khif-browser.log'
+  if pgrep -af 'chromium|chromium-browser|chrome' >/dev/null 2>&1; then
+    pkill -f 'chromium|chromium-browser|chrome' >/dev/null 2>&1 || true
+    sleep 2
+  fi
+
+  if [[ -x /var/lib/dietpi/dietpi-software/installed/chromium-autostart.sh ]]; then
+    setsid /usr/bin/env bash /var/lib/dietpi/dietpi-software/installed/chromium-autostart.sh \
+      >/tmp/khif-browser.log 2>&1 < /dev/null &
+
+    sleep 3
+
+    if pgrep -af 'chromium|chromium-browser|chrome' >/dev/null 2>&1; then
+      printf 'ok: browser restarted'
+      return 0
+    fi
+  fi
+
+  printf 'error: browser could not be restarted; log: /tmp/khif-browser.log'
   return 1
 }
 
