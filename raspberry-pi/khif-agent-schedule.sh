@@ -2,10 +2,10 @@
 set -uo pipefail
 
 OWNER="${KHIF_GITHUB_OWNER:-msj33}"
-REPO="${KHIF_GITHUB_REPO:-khif-info}"
+REPO="${KHIF_GITHUB_REPO:-khif-info-state}"
 BRANCH="${KHIF_GITHUB_BRANCH:-main}"
 RAW_ROOT="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}"
-SCHEDULE_URL="${RAW_ROOT}/screen-schedule.json"
+SCHEDULE_URL="${RAW_ROOT}/remote/screen-schedule.json"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CRON_MARKER_START="# KHIF-SCHEDULE-CRON-BEGIN"
 CRON_MARKER_END="# KHIF-SCHEDULE-CRON-END"

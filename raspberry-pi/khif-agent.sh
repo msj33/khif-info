@@ -409,6 +409,18 @@ execute_command(){
       fi
       ;;
 
+    reload-schedule)
+      local output
+      if output=$(/opt/khif-agent/khif-agent-schedule.sh 2>&1); then
+        log "Schedule reload succeeded"
+        printf 'ok: schedule reloaded'
+      else
+        output="${output//$'\n'/ }"
+        log "Schedule reload failed: ${output}"
+        printf 'error: schedule reload failed: %s' "${output}"
+      fi
+      ;;
+
     reboot-pi)
       write_status \
         "reboot-pi" \
@@ -489,7 +501,7 @@ check_command(){
 
   case "$command" in
 
-    none|reload-page|restart-browser|reboot-pi|screen-on|screen-off)
+    none|reload-page|restart-browser|reboot-pi|screen-on|screen-off|reload-schedule)
 
       result="$(execute_command "$command" 2>&1)"
 
