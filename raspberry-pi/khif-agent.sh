@@ -16,7 +16,7 @@ STATUS_PATH="${KHIF_STATUS_PATH:-remote/status/${DEVICE_ID}.json}"
 KIOSK_SERVICE="${KHIF_KIOSK_SERVICE:-khif-kiosk.service}"
 
 STATUS_INTERVAL="${KHIF_STATUS_INTERVAL:-30}"
-COMMAND_INTERVAL="${KHIF_COMMAND_INTERVAL:-5}"
+COMMAND_INTERVAL="${KHIF_COMMAND_INTERVAL:-2}"
 
 LAST_COMMAND_FILE="${STATE_DIR}/last-command-id"
 LAST_COMMAND_STR_FILE="${STATE_DIR}/last-command"
@@ -225,6 +225,59 @@ EOF
   return 0
 }
 
+command_already_processed(){
+  local status="$1"
+  case "$status" in
+    completed|failed|rejected|expired)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+update_command_file(){
+  local json="$1"
+  local status="$2"
+  local result="$3"
+  local error="$4"
+  local tmp
+
+  tmp="$(mktemp)"
+
+  printf '%s' "$json" | DEVICE_ID="$DEVICE_ID" python3 - "$status" "$result" "$error" > "$tmp" <<'PY'
+import json,sys,os
+from datetime import datetime
+
+data=json.load(sys.stdin)
+status=sys.argv[1] if len(sys.argv) > 1 else ''
+result=sys.argv[2] if len(sys.argv) > 2 else ''
+error=sys.argv[3] if len(sys.argv) > 3 else ''
+if status:
+    data["status"] = status
+elif "status" not in data:
+    data["status"] = "pending"
+if result:
+    data["result"] = result
+if error:
+    data["error"] = error
+if status in ("completed","failed","rejected","expired"):
+    data["completedAt"] = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+if "handledBy" not in data or status in ("completed","failed","rejected","expired"):
+    data["handledBy"] = os.environ.get("DEVICE_ID","unknown")
+json.dump(data, sys.stdout, indent=2)
+sys.stdout.write("\n")
+PY
+
+  if ! api_put_json_file "$COMMAND_PATH" "$tmp"; then
+    rm -f "$tmp"
+    return 1
+  fi
+
+  rm -f "$tmp"
+  return 0
+}
 
 fetch_command_json(){
   curl -fsS \
@@ -461,17 +514,26 @@ check_command(){
   command_id="$(printf '%s\n' "$json" | json_get_string id)"
   device_id="$(printf '%s\n' "$json" | json_get_string deviceId)"
   command="$(printf '%s\n' "$json" | json_get_string command)"
+  command_status="$(printf '%s\n' "$json" | json_get_string status)"
   expires_at="$(printf '%s\n' "$json" | json_get_string expiresAt)"
 
   last_id="$(last_command_id)"
 
-  log "Command check: id=${command_id:-none} device=${device_id:-none} command=${command:-none} expires=${expires_at:-none} last_id=${last_id:-none}"
+  log "Command check: id=${command_id:-none} device=${device_id:-none} command=${command:-none} status=${command_status:-none} expires=${expires_at:-none} last_id=${last_id:-none}"
 
-  [[ -z "$command_id" ||
-     "$command_id" == "initial" ||
-     "$command_id" == "$last_id" ]] &&
-     return 0
+  if [[ -z "$command_id" ||
+        "$command_id" == "initial" ]]; then
+    return 0
+  fi
 
+  if [[ -n "$command_status" ]] && command_already_processed "$command_status"; then
+    save_last_command_id "$command_id"
+    return 0
+  fi
+
+  if [[ "$command_id" == "$last_id" ]]; then
+    return 0
+  fi
 
   [[ "$device_id" != "$DEVICE_ID" &&
      "$device_id" != "all" ]] &&
@@ -488,6 +550,7 @@ check_command(){
           "$now_epoch" -gt "$exp_epoch" ]]; then
 
       save_last_command_id "$command_id"
+      update_command_file "$json" "expired" "expired" "Command expired" || true
 
       write_status \
         "$command" \
@@ -503,9 +566,15 @@ check_command(){
 
     none|reload-page|restart-browser|reboot-pi|screen-on|screen-off|reload-schedule)
 
-      result="$(execute_command "$command" 2>&1)"
+      if result="$(execute_command "$command" 2>&1)"; then
+        command_result="completed"
+      else
+        command_result="failed"
+      fi
 
       save_last_command_id "$command_id"
+
+      update_command_file "$json" "$command_result" "$result" "" || log "Failed to update command file status: ${last_agent_error:-unknown}"
 
       write_status \
         "$command" \
@@ -518,6 +587,7 @@ check_command(){
     *)
 
       save_last_command_id "$command_id"
+      update_command_file "$json" "rejected" "rejected" "Command not allowed: ${command}" || true
 
       write_status \
         "$command" \
