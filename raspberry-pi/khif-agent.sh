@@ -415,19 +415,21 @@ EOF
 
 
 restart_browser(){
-  if systemctl restart "$KIOSK_SERVICE" >/dev/null 2>&1; then
-    printf 'ok: systemctl restart %s' "$KIOSK_SERVICE"
-    return 0
-  fi
-
   pkill -f 'chromium|chromium-browser|chrome' >/dev/null 2>&1 || true
   sleep 2
-  if systemctl start "$KIOSK_SERVICE" >/dev/null 2>&1; then
-    printf 'ok: restarted %s after kill' "$KIOSK_SERVICE"
+
+  /usr/bin/env bash /var/lib/dietpi/dietpi-software/installed/chromium-autostart.sh \
+    >/tmp/khif-browser.log 2>&1 < /dev/null &
+
+  sleep 2
+
+  if pgrep -af 'chromium|chromium-browser|chrome' >/dev/null 2>&1; then
+    printf 'ok: restarted browser via DietPi autostart'
     return 0
   fi
 
-  printf 'ok: chromium process signalled'
+  printf 'error: browser did not start; log: /tmp/khif-browser.log'
+  return 1
 }
 
 
