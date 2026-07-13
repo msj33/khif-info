@@ -421,6 +421,12 @@ restart_browser(){
   fi
 
   pkill -f 'chromium|chromium-browser|chrome' >/dev/null 2>&1 || true
+  sleep 2
+  if systemctl start "$KIOSK_SERVICE" >/dev/null 2>&1; then
+    printf 'ok: restarted %s after kill' "$KIOSK_SERVICE"
+    return 0
+  fi
+
   printf 'ok: chromium process signalled'
 }
 
