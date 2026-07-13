@@ -21,8 +21,8 @@ function utf8ToB64(text){const bytes=new TextEncoder().encode(text);let bin='';b
 async function deriveKey(password,salt){const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:CONFIG.iterations||250000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}
 async function decryptToken(password){if(!CONFIG)throw new Error('Admin-konfiguration mangler i ../admin/secret.js.');const key=await deriveKey(password,b64ToBytes(CONFIG.salt));const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64ToBytes(CONFIG.iv)},key,b64ToBytes(CONFIG.encryptedToken));return new TextDecoder().decode(dec)}
 function headers(extra={}){return{Accept:'application/vnd.github+json',Authorization:`Bearer ${token}`,'X-GitHub-Api-Version':'2022-11-28',...extra}}
-async function stateContent(path,options={}){const res=await fetch(`https://api.github.com/repos/${STATE_OWNER}/${STATE_REPO}/contents/${path}`,{cache:'no-store',...options,headers:headers(options.headers||{})});const json=await res.json().catch(()=>({}));if(!res.ok)throw new Error(json.message||`GitHub API fejl ${res.status}`);return json}
-async function repoContent(path,options={}){const method=(options.method||'GET').toUpperCase();const url=`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}${method==='GET'?`?ref=${encodeURIComponent(CONFIG.branch||'main')}`:''}`;const res=await fetch(url,{cache:'no-store',...options,headers:headers(options.headers||{})});const json=await res.json().catch(()=>({}));if(!res.ok)throw new Error(json.message||`GitHub API fejl ${res.status}`);return json}
+async function stateContent(path,options={}){const res=await fetch(`https://api.github.com/repos/${STATE_OWNER}/${STATE_REPO}/contents/${path}`,{...options,headers:headers(options.headers||{})});const json=await res.json().catch(()=>({}));if(!res.ok)throw new Error(json.message||`GitHub API fejl ${res.status}`);return json}
+async function repoContent(path,options={}){const method=(options.method||'GET').toUpperCase();const url=`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}${method==='GET'?`?ref=${encodeURIComponent(CONFIG.branch||'main')}`:''}`;const res=await fetch(url,{...options,headers:headers(options.headers||{})});const json=await res.json().catch(()=>({}));if(!res.ok)throw new Error(json.message||`GitHub API fejl ${res.status}`);return json}
 async function readJsonFile(path){
   const file=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
   const encoded=String(file.content||'')
@@ -43,30 +43,27 @@ async function writeJsonFile(path,obj,sha){
     return await stateContent(path,{method:'PUT',body:JSON.stringify(body)})
   }
 
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    if (!sha) {
-      try {
-        const existing = await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
-        sha = existing.sha
-      } catch (error) {
-        if (!String(error?.message || '').includes('404')) throw error
-      }
-    }
-
+  if (!sha) {
     try {
-      const res = await putFile(sha)
-      return res.content?.sha || null
+      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+      sha=existing.sha
     } catch (error) {
-      const message = String(error?.message || '')
-      if (attempt < 3 && (message.includes('does not match') || message.includes('sha'))) {
-        sha = null
-        continue
-      }
-      throw error
+      if (!String(error?.message||'').includes('404')) throw error
     }
   }
 
-  throw new Error('Failed to write JSON file after retrying SHA mismatch')
+  try {
+    const res = await putFile(sha)
+    return res.content?.sha||null
+  } catch (error) {
+    const message=String(error?.message||'')
+    if (message.includes('does not match') || message.includes('sha')) {
+      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+      const res = await putFile(existing.sha)
+      return res.content?.sha||null
+    }
+    throw error
+  }
 }
 function formatDate(value){if(!value)return'-';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString('da-DK')}
 function formatUptime(seconds){const s=Number(seconds||0);if(!s)return'-';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);return d>0?`${d}d ${h}t ${m}m`:`${h}t ${m}m`}
