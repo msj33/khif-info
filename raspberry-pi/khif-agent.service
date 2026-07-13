@@ -13,6 +13,7 @@ Environment=KHIF_DEVICE_ID=khif-infoscreen-01
 ExecStart=/bin/bash /opt/khif-agent/khif-agent.sh
 Restart=always
 RestartSec=10
+KillMode=process
 User=root
 
 [Install]
