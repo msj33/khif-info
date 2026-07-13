@@ -19,11 +19,31 @@ STATUS_INTERVAL="${KHIF_STATUS_INTERVAL:-30}"
 COMMAND_INTERVAL="${KHIF_COMMAND_INTERVAL:-5}"
 
 LAST_COMMAND_FILE="${STATE_DIR}/last-command-id"
+LAST_COMMAND_STR_FILE="${STATE_DIR}/last-command"
+LAST_COMMAND_RESULT_FILE="${STATE_DIR}/last-command-result"
+LAST_COMMAND_ERROR_FILE="${STATE_DIR}/last-command-error"
 
 API_ROOT="https://api.github.com/repos/${OWNER}/${REPO}/contents"
 RAW_ROOT="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}"
 
 mkdir -p "$STATE_DIR"
+
+read_cached(){
+  local path="$1"
+  [[ -f "$path" ]] && cat "$path" || true
+}
+
+save_last_command(){
+  printf '%s' "$1" > "$LAST_COMMAND_STR_FILE"
+}
+
+save_last_command_result(){
+  printf '%s' "$1" > "$LAST_COMMAND_RESULT_FILE"
+}
+
+save_last_command_error(){
+  printf '%s' "$1" > "$LAST_COMMAND_ERROR_FILE"
+}
 
 last_agent_error=""
 
@@ -184,20 +204,26 @@ EOF
 EOF
   fi
 
-  _curl_with_error \
+  local response
+  response="$(_curl_with_error \
     "${API_ROOT}/${path}" \
     -X PUT \
     --data-binary "@${body_file}" \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer ${token}" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    -H "Content-Type: application/json"
+    -H "Content-Type: application/json" || true)"
 
   local rc=$?
 
   rm -f "$body_file"
 
-  return "$rc"
+  if [[ $rc -ne 0 ]]; then
+    log "GitHub PUT failed for ${path}: ${last_agent_error}"
+    return "$rc"
+  fi
+
+  return 0
 }
 
 
@@ -229,11 +255,36 @@ browser_status(){
   fi
 }
 
+vcgencmd_path(){
+  if command -v vcgencmd >/dev/null 2>&1; then
+    command -v vcgencmd
+  elif [[ -x /opt/vc/bin/vcgencmd ]]; then
+    printf '%s' '/opt/vc/bin/vcgencmd'
+  elif [[ -x /usr/bin/vcgencmd ]]; then
+    printf '%s' '/usr/bin/vcgencmd'
+  else
+    return 1
+  fi
+}
+
 
 write_status(){
   local last_command="${1:-}"
   local last_result="${2:-}"
   local last_error="${3:-}"
+
+  local cached_last_command cached_last_result cached_last_error
+  cached_last_command="$(read_cached "$LAST_COMMAND_STR_FILE")"
+  cached_last_result="$(read_cached "$LAST_COMMAND_RESULT_FILE")"
+  cached_last_error="$(read_cached "$LAST_COMMAND_ERROR_FILE")"
+
+  last_command="${last_command:-$cached_last_command}"
+  last_result="${last_result:-$cached_last_result}"
+  last_error="${last_error:-$cached_last_error}"
+
+  save_last_command "$last_command"
+  save_last_command_result "$last_result"
+  save_last_command_error "$last_error"
 
   local status_file
   local hostname
@@ -297,21 +348,27 @@ reload_page(){
 }
 
 screen_power_state(){
-  if command -v vcgencmd >/dev/null 2>&1; then
-    local state
-    state=$(vcgencmd display_power 2>/dev/null)
-    if [[ "$state" == "Display Power: 0" || "$state" == "0" ]]; then
-      printf 'off'
-      return 0
-    elif [[ "$state" == "Display Power: 1" || "$state" == "1" ]]; then
-      printf 'on'
-      return 0
-    fi
+  local vcgencmd
+  vcgencmd=$(vcgencmd_path) || {
+    printf 'unknown'
+    return 0
+  }
+
+  local state
+  state=$("$vcgencmd" display_power 2>/dev/null)
+  if [[ "$state" == "Display Power: 0" || "$state" == "0" ]]; then
+    printf 'off'
+    return 0
+  elif [[ "$state" == "Display Power: 1" || "$state" == "1" ]]; then
+    printf 'on'
+    return 0
   fi
+
   printf 'unknown'
 }
 
 execute_command(){
+  log "execute_command: $1"
   case "$1" in
     none)
       printf 'ignored: none'
@@ -326,18 +383,26 @@ execute_command(){
       ;;
 
     screen-on)
-      if /opt/khif-agent/screen-power.sh on >/dev/null 2>&1; then
+      local output
+      if output=$(/opt/khif-agent/screen-power.sh on 2>&1); then
+        log "Screen on succeeded"
         printf 'ok: screen on'
       else
-        printf 'error: screen on failed'
+        output="${output//$'\n'/ }"
+        log "Screen on failed: ${output}"
+        printf 'error: screen on failed: %s' "${output}"
       fi
       ;;
 
     screen-off)
-      if /opt/khif-agent/screen-power.sh off >/dev/null 2>&1; then
+      local output
+      if output=$(/opt/khif-agent/screen-power.sh off 2>&1); then
+        log "Screen off succeeded"
         printf 'ok: screen off'
       else
-        printf 'error: screen off failed'
+        output="${output//$'\n'/ }"
+        log "Screen off failed: ${output}"
+        printf 'error: screen off failed: %s' "${output}"
       fi
       ;;
 
@@ -385,6 +450,7 @@ check_command(){
 
   last_id="$(last_command_id)"
 
+  log "Command check: id=${command_id:-none} device=${device_id:-none} command=${command:-none} expires=${expires_at:-none} last_id=${last_id:-none}"
 
   [[ -z "$command_id" ||
      "$command_id" == "initial" ||
