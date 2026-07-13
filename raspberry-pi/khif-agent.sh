@@ -249,6 +249,7 @@ write_status(){
   uptime="$(uptime_seconds)"
   temp="$(LC_NUMERIC=C temperature_c)"
   browser="$(browser_status)"
+  screen_power="$(screen_power_state)"
   last_id="$(last_command_id)"
 
   if [[ -n "$temp" ]]; then
@@ -258,7 +259,7 @@ write_status(){
   fi
 
   cat > "$status_file" <<EOF
-{"deviceId":"$(json_escape "$DEVICE_ID")","status":"online","lastSeen":"$(now_iso)","hostname":"$(json_escape "$hostname")","uptimeSeconds":${uptime:-0},"temperatureC":${temp_json},"browser":"$(json_escape "$browser")","currentUrl":"https://msj33.github.io/khif-info/","lastCommandId":"$(json_escape "$last_id")","lastCommand":"$(json_escape "$last_command")","lastCommandResult":"$(json_escape "$last_result")","lastError":"$(json_escape "$last_error")"}
+{"deviceId":"$(json_escape "$DEVICE_ID")","status":"online","lastSeen":"$(now_iso)","hostname":"$(json_escape "$hostname")","uptimeSeconds":${uptime:-0},"temperatureC":${temp_json},"browser":"$(json_escape "$browser")","screenPower":"$(json_escape "$screen_power")","currentUrl":"https://msj33.github.io/khif-info/","lastCommandId":"$(json_escape "$last_id")","lastCommand":"$(json_escape "$last_command")","lastCommandResult":"$(json_escape "$last_result")","lastError":"$(json_escape "$last_error")"}
 EOF
 
   api_put_json_file "$STATUS_PATH" "$status_file"
@@ -295,6 +296,20 @@ reload_page(){
   restart_browser
 }
 
+screen_power_state(){
+  if command -v vcgencmd >/dev/null 2>&1; then
+    local state
+    state=$(vcgencmd display_power 2>/dev/null)
+    if [[ "$state" == "Display Power: 0" || "$state" == "0" ]]; then
+      printf 'off'
+      return 0
+    elif [[ "$state" == "Display Power: 1" || "$state" == "1" ]]; then
+      printf 'on'
+      return 0
+    fi
+  fi
+  printf 'unknown'
+}
 
 execute_command(){
   case "$1" in
@@ -308,6 +323,22 @@ execute_command(){
 
     restart-browser)
       restart_browser
+      ;;
+
+    screen-on)
+      if /opt/khif-agent/screen-power.sh on >/dev/null 2>&1; then
+        printf 'ok: screen on'
+      else
+        printf 'error: screen on failed'
+      fi
+      ;;
+
+    screen-off)
+      if /opt/khif-agent/screen-power.sh off >/dev/null 2>&1; then
+        printf 'ok: screen off'
+      else
+        printf 'error: screen off failed'
+      fi
       ;;
 
     reboot-pi)
@@ -389,7 +420,7 @@ check_command(){
 
   case "$command" in
 
-    none|reload-page|restart-browser|reboot-pi)
+    none|reload-page|restart-browser|reboot-pi|screen-on|screen-off)
 
       result="$(execute_command "$command" 2>&1)"
 
