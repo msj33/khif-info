@@ -29,7 +29,7 @@ install_crontab(){
   tmp_current="$(mktemp)"
   tmp_next="$(mktemp)"
 
-  crontab -l > "$tmp_current" 2>/dev/null || true
+  crontab -u root -l > "$tmp_current" 2>/dev/null || true
   clean_crontab "$tmp_current" > "$tmp_next"
 
   if [[ -n "$schedule_lines" ]]; then
@@ -40,7 +40,7 @@ install_crontab(){
     } >> "$tmp_next"
   fi
 
-  crontab "$tmp_next"
+  crontab -u root "$tmp_next"
   rm -f "$tmp_current" "$tmp_next"
 }
 
@@ -110,6 +110,13 @@ for line in lines:
     print(line)
 PY
 )"
+
+if [[ -z "$schedule_lines" ]]; then
+  log "Generated no cron lines from schedule JSON"
+else
+  log "Generated cron lines:" 
+  printf '%s\n' "$schedule_lines" | sed 's/^/  /'
+fi
 
 install_crontab "$schedule_lines"
 log "Cron schedule updated."
