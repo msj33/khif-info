@@ -37,6 +37,12 @@ async function readJsonFile(path){
   return {json:parsed,sha:file.sha}
 }
 async function writeJsonFile(path,obj,sha){
+  async function putFile(currentSha){
+    const body={message:`Superadmin update ${path}`,content:utf8ToB64(JSON.stringify(obj,null,2)+'\n'),branch:STATE_BRANCH}
+    if(currentSha)body.sha=currentSha
+    return await stateContent(path,{method:'PUT',body:JSON.stringify(body)})
+  }
+
   if (!sha) {
     try {
       const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
@@ -45,10 +51,19 @@ async function writeJsonFile(path,obj,sha){
       if (!String(error?.message||'').includes('404')) throw error
     }
   }
-  const body={message:`Superadmin update ${path}`,content:utf8ToB64(JSON.stringify(obj,null,2)+'\n'),branch:STATE_BRANCH}
-  if(sha)body.sha=sha
-  const res=await stateContent(path,{method:'PUT',body:JSON.stringify(body)})
-  return res.content?.sha||null
+
+  try {
+    const res = await putFile(sha)
+    return res.content?.sha||null
+  } catch (error) {
+    const message=String(error?.message||'')
+    if (message.includes('does not match') || message.includes('sha')) {
+      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+      const res = await putFile(existing.sha)
+      return res.content?.sha||null
+    }
+    throw error
+  }
 }
 function formatDate(value){if(!value)return'-';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString('da-DK')}
 function formatUptime(seconds){const s=Number(seconds||0);if(!s)return'-';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);return d>0?`${d}d ${h}t ${m}m`:`${h}t ${m}m`}
