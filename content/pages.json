@@ -4,7 +4,7 @@
     {
       "enabled": true,
       "kicker": "KHIF - Info",
-      "title": "Velkommen 👋",
+      "title": "Velkommen 👋👋",
       "text": "Velkommen til Kolt-Hasselager sportsanlæg💚",
       "footer": "KHIF Info",
       "backgroundColor": "#111827",
@@ -109,8 +109,7 @@
       "image": "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg",
       "images": [
         "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg",
-        "/khif-info/assets/uploads/1782943644969-733499575-1510539537316323-4246480027590.jpg",
-        "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg"
+        "/khif-info/assets/uploads/1782943644969-733499575-1510539537316323-4246480027590.jpg"
       ]
     },
     {
@@ -139,8 +138,8 @@
     }
   ],
   "meta": {
-    "version": 46,
-    "updatedAt": "2026-07-13T13:38:06.954Z",
+    "version": 47,
+    "updatedAt": "2026-07-13T20:25:11.327Z",
     "updatedBy": "khif"
   },
   "config": {
