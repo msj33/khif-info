@@ -57,11 +57,9 @@ fi
 schedule_json="$(fetch_schedule)"
 if [[ -z "$schedule_json" ]]; then
   log "Unable to fetch schedule JSON"
-  install_crontab ""
-  exit 1
-fi
-
-schedule_lines="$(printf '%s' "$schedule_json" | python3 - <<'PY'
+  schedule_lines="0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh"
+else
+  schedule_lines="$(printf '%s' "$schedule_json" | python3 - <<'PY'
 import json,sys
 
 data_text=sys.stdin.read()
@@ -105,18 +103,20 @@ for idx, day in enumerate(order):
     else:
         next_day=order[(idx + 1) % len(order)]
         lines.append(f"{em} {eh} * * {cron_day[next_day]} {command_off}")
-lines.append("0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh")
 for line in lines:
     print(line)
 PY
 )"
-
-if [[ -z "$schedule_lines" ]]; then
-  log "Generated no cron lines from schedule JSON"
-else
-  log "Generated cron lines:" 
-  printf '%s\n' "$schedule_lines" | sed 's/^/  /'
+  if [[ -z "$schedule_lines" ]]; then
+    log "Schedule JSON parsed, but generated no cron lines. Keeping refresh cron only."
+    schedule_lines="0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh"
+  else
+    schedule_lines="$(printf '%s\n%s' "$schedule_lines" "0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh")"
+  fi
 fi
+
+log "Generated cron lines:"
+printf '%s\n' "$schedule_lines" | sed 's/^/  /'
 
 install_crontab "$schedule_lines"
 log "Cron schedule updated."
