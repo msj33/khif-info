@@ -55,20 +55,19 @@ if ! command -v python3 >/dev/null 2>&1; then
 fi
 
 schedule_json="$(fetch_schedule)"
+log "Fetched schedule JSON length: ${#schedule_json}"
 if [[ -z "$schedule_json" ]]; then
   log "Unable to fetch schedule JSON"
   schedule_lines="0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh"
 else
-  schedule_lines="$(printf '%s' "$schedule_json" | python3 - <<'PY'
+  tmp_schedule="$(mktemp)"
+  printf '%s' "$schedule_json" > "$tmp_schedule"
+  schedule_lines="$(python3 - "$tmp_schedule" <<'PY'
 import json,sys
 
-data_text=sys.stdin.read()
-if not data_text.strip():
-    sys.exit(0)
-try:
-    data=json.loads(data_text)
-except json.JSONDecodeError:
-    sys.exit(0)
+path=sys.argv[1]
+with open(path, 'r', encoding='utf-8') as fh:
+    data=json.load(fh)
 
 if not isinstance(data, dict):
     sys.exit(0)
@@ -97,16 +96,21 @@ for idx, day in enumerate(order):
         continue
     command_on='vcgencmd display_power 1'
     command_off='vcgencmd display_power 0'
-    lines.append(f"{sm} {sh} * * {cron_day[day]} {command_on}")
+    lines.append("{} {} * * {} {}".format(sm, sh, cron_day[day], command_on))
     if sh < eh or (sh == eh and sm < em):
-        lines.append(f"{em} {eh} * * {cron_day[day]} {command_off}")
+        lines.append("{} {} * * {} {}".format(em, eh, cron_day[day], command_off))
     else:
         next_day=order[(idx + 1) % len(order)]
-        lines.append(f"{em} {eh} * * {cron_day[next_day]} {command_off}")
+        lines.append("{} {} * * {} {}".format(em, eh, cron_day[next_day], command_off))
 for line in lines:
     print(line)
 PY
 )"
+  py_status=$?
+  rm -f "$tmp_schedule"
+  if [[ $py_status -ne 0 ]]; then
+    log "Python cron generation failed with exit code $py_status"
+  fi
   if [[ -z "$schedule_lines" ]]; then
     log "Schedule JSON parsed, but generated no cron lines. Keeping refresh cron only."
     schedule_lines="0 3 * * * /usr/bin/env bash /opt/khif-agent/khif-agent-schedule.sh"
