@@ -11,10 +11,10 @@ const SCHEDULE_PATH='remote/screen-schedule.json';
 const POLL_MS=5000;
 const OFFLINE_AFTER_MS=2*60*1000;
 const $=id=>document.getElementById(id);
-let token=null,commandSha=null,statusTimer=null,scheduleSha=null,scheduleData=null;
+let token=null,commandSha=null,statusTimer=null,scheduleSha=null,scheduleData=null,commandInFlight=false,commandCooldownUntil=0;
 const els={loginPanel:$('loginPanel'),superPanel:$('superPanel'),logoutButton:$('logoutButton'),username:$('username'),password:$('password'),loginButton:$('loginButton'),loginMessage:$('loginMessage'),onlinePill:$('onlinePill'),deviceTitle:$('deviceTitle'),lastSeen:$('lastSeen'),hostname:$('hostname'),uptime:$('uptime'),temperature:$('temperature'),browser:$('browser'),screenPower:$('screenPower'),lastCommand:$('lastCommand'),lastError:$('lastError'),rawStatus:$('rawStatus'),reloadPageButton:$('reloadPageButton'),restartBrowserButton:$('restartBrowserButton'),turnScreenOnButton:$('turnScreenOnButton'),turnScreenOffButton:$('turnScreenOffButton'),rebootPiButton:$('rebootPiButton'),commandMessage:$('commandMessage'),scheduleEnabled:$('scheduleEnabled'),scheduleDays:$('scheduleDays'),scheduleSummary:$('scheduleSummary'),scheduleMessage:$('scheduleMessage'),scheduleJson:$('scheduleJson'),saveScheduleButton:$('saveScheduleButton'),refreshScheduleButton:$('refreshScheduleButton'),refreshScheduleOnPiButton:$('refreshScheduleOnPiButton')};
 function msg(el,text,error=false){if(!el)return;el.textContent=text||'';el.classList.toggle('error',!!error)}
-function friendlyError(error){if(error?.name==='OperationError'||String(error?.message||error||'').includes('OperationError'))return'Forkert brugernavn eller password.';return error?.message||String(error||'Ukendt fejl')}
+function friendlyError(error){const message=String(error?.message||error||'');if(error?.name==='OperationError'||message.includes('OperationError'))return'Forkert brugernavn eller password.';if(message.includes('does not match')||message.includes('sha')||message.includes('conflict'))return'Afvent venligst 30 sekunder, før du forsøger ny kommando.';return message||String(error||'Ukendt fejl')}
 function b64ToBytes(b64){return Uint8Array.from(atob(b64),c=>c.charCodeAt(0))}
 function b64ToUtf8(b64){return new TextDecoder().decode(Uint8Array.from(atob(String(b64||'').replace(/\n/g,'')),c=>c.charCodeAt(0)))}
 function utf8ToB64(text){const bytes=new TextEncoder().encode(text);let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
@@ -43,27 +43,34 @@ async function writeJsonFile(path,obj,sha){
     return await stateContent(path,{method:'PUT',body:JSON.stringify(body)})
   }
 
-  if (!sha) {
+  let currentSha=sha
+  for (let attempt=1; attempt<=3; attempt+=1) {
+    if (!currentSha) {
+      try {
+        const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+        currentSha=existing.sha
+      } catch (error) {
+        if (!String(error?.message||'').includes('404')) throw error
+      }
+    }
+
     try {
-      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
-      sha=existing.sha
+      const res=await putFile(currentSha)
+      return res.content?.sha||null
     } catch (error) {
-      if (!String(error?.message||'').includes('404')) throw error
+      const message=String(error?.message||'')
+      if (attempt < 3 && (message.includes('does not match') || message.includes('sha') || message.includes('conflict'))) {
+        try {
+          const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+          currentSha=existing.sha
+          continue
+        } catch (_) {}
+      }
+      throw error
     }
   }
 
-  try {
-    const res = await putFile(sha)
-    return res.content?.sha||null
-  } catch (error) {
-    const message=String(error?.message||'')
-    if (message.includes('does not match') || message.includes('sha')) {
-      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
-      const res = await putFile(existing.sha)
-      return res.content?.sha||null
-    }
-    throw error
-  }
+  throw new Error('Failed to write JSON file after retries')
 }
 function formatDate(value){if(!value)return'-';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString('da-DK')}
 function formatUptime(seconds){const s=Number(seconds||0);if(!s)return'-';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);return d>0?`${d}d ${h}t ${m}m`:`${h}t ${m}m`}
@@ -81,7 +88,10 @@ async function saveSchedule(){try{msg(els.scheduleMessage,'Gemmer tidsplan…');
 function setPill(text,cls){els.onlinePill.textContent=text;els.onlinePill.className=`status-pill ${cls}`}
 function renderStatus(status){const lastSeenDate=status.lastSeen?new Date(status.lastSeen):null;const offline=!lastSeenDate||(Date.now()-lastSeenDate.getTime()>OFFLINE_AFTER_MS);setPill(offline?'Offline':'Online',offline?'error':'ok');els.deviceTitle.textContent=status.deviceId||DEVICE_ID;els.lastSeen.textContent=formatDate(status.lastSeen);els.hostname.textContent=status.hostname||'-';els.uptime.textContent=formatUptime(status.uptimeSeconds);els.temperature.textContent=typeof status.temperatureC==='number'?`${status.temperatureC.toFixed(1)} °C`:'-';els.browser.textContent=status.browser||'-';const screenPower=String(status.screenPower||status.screenState||'').toLowerCase();els.screenPower.textContent=screenPower==='on'?'Tændt':screenPower==='off'?'Slukket':(screenPower||'-');if(els.turnScreenOnButton)els.turnScreenOnButton.disabled=screenPower==='on';if(els.turnScreenOffButton)els.turnScreenOffButton.disabled=screenPower==='off';els.lastCommand.textContent=[status.lastCommand,status.lastCommandResult].filter(Boolean).join(' / ')||'-';msg(els.lastError,status.lastError||'',!!status.lastError);els.rawStatus.textContent=JSON.stringify(status,null,2)}
 async function refreshStatus(){try{const{json}=await readJsonFile(STATUS_PATH);renderStatus(json)}catch(error){setPill('Offline','error');msg(els.lastError,`Kunne ikke hente status fra ${STATE_REPO}: ${friendlyError(error)}`,true)}}
-async function sendCommand(command){if(command==='reboot-pi'&&!confirm('Er du sikker på at du vil genstarte Raspberry Pi’en?'))return;if(command==='restart-browser'&&!confirm('Er du sikker på at du vil genstarte browseren?'))return;try{msg(els.commandMessage,`Sender kommando: ${command}…`);try{const existing=await readJsonFile(COMMAND_PATH);commandSha=existing.sha}catch(_){commandSha=null}const now=new Date();const obj={id:`${now.toISOString()}-${Math.random().toString(16).slice(2,8)}`,deviceId:DEVICE_ID,command,createdAt:now.toISOString(),expiresAt:new Date(now.getTime()+10*60*1000).toISOString(),createdBy:'superadmin'};commandSha=await writeJsonFile(COMMAND_PATH,obj,commandSha);msg(els.commandMessage,'Kommando sendt. Status opdateres automatisk.');setTimeout(refreshStatus,2000)}catch(error){msg(els.commandMessage,friendlyError(error),true)}}
+function setCommandControlsDisabled(disabled){[els.reloadPageButton,els.restartBrowserButton,els.turnScreenOnButton,els.turnScreenOffButton,els.rebootPiButton,els.refreshScheduleOnPiButton,els.saveScheduleButton].filter(Boolean).forEach(btn=>{btn.disabled=disabled})}
+function getCommandCooldownRemainingSeconds(){const remaining=Math.ceil((commandCooldownUntil-Date.now())/1000);return remaining>0?remaining:0}
+function canSendCommand(){const remaining=getCommandCooldownRemainingSeconds();if(remaining>0){msg(els.commandMessage,`Afvent venligst ${remaining} sekunder, før du forsøger ny kommando.`,true);return false}return true}
+async function sendCommand(command){if(command==='reboot-pi'&&!confirm('Er du sikker på at du vil genstarte Raspberry Pi’en?'))return;if(command==='restart-browser'&&!confirm('Er du sikker på at du vil genstarte browseren?'))return;if(commandInFlight){msg(els.commandMessage,'En kommando er allerede undervejs. Vent et øjeblik.',true);return}if(!canSendCommand())return;commandInFlight=true;setCommandControlsDisabled(true);try{msg(els.commandMessage,`Sender kommando: ${command}…`);try{const existing=await readJsonFile(COMMAND_PATH);commandSha=existing.sha}catch(_){commandSha=null}const now=new Date();const obj={id:`${now.toISOString()}-${Math.random().toString(16).slice(2,8)}`,deviceId:DEVICE_ID,command,createdAt:now.toISOString(),expiresAt:new Date(now.getTime()+10*60*1000).toISOString(),createdBy:'superadmin'};commandSha=await writeJsonFile(COMMAND_PATH,obj,commandSha);commandCooldownUntil=Date.now()+30000;msg(els.commandMessage,'Kommando sendt. Status opdateres automatisk.');setTimeout(refreshStatus,2000)}catch(error){const message=String(error?.message||'');if(message.includes('does not match')||message.includes('sha')||message.includes('conflict')){commandCooldownUntil=Date.now()+30000;msg(els.commandMessage,'Afvent venligst 30 sekunder, før du forsøger ny kommando.',true)}else{msg(els.commandMessage,friendlyError(error),true)}}finally{commandInFlight=false;setCommandControlsDisabled(false)}}
 async function login(){try{msg(els.loginMessage,'Logger ind…');els.loginButton.disabled=true;if((els.username.value||'').trim()!==CONFIG.adminUsername)throw new Error('Forkert brugernavn eller password.');token=await decryptToken(els.password.value);els.loginPanel.classList.add('hidden');els.superPanel.classList.remove('hidden');els.logoutButton.classList.remove('hidden');els.password.value='';msg(els.loginMessage,'');await Promise.all([refreshStatus(),refreshSchedule()]);statusTimer=setInterval(refreshStatus,POLL_MS)}catch(error){token=null;msg(els.loginMessage,friendlyError(error),true)}finally{els.loginButton.disabled=false}}
 function init(){msg(els.loginMessage,'Klar til login.');els.loginButton.onclick=login;els.password?.addEventListener('keydown',e=>{if(e.key==='Enter')login()});els.logoutButton.onclick=()=>location.reload();els.reloadPageButton.onclick=()=>sendCommand('reload-page');els.restartBrowserButton.onclick=()=>sendCommand('restart-browser');els.turnScreenOnButton.onclick=()=>sendCommand('screen-on');els.turnScreenOffButton.onclick=()=>sendCommand('screen-off');els.rebootPiButton.onclick=()=>sendCommand('reboot-pi');els.saveScheduleButton.onclick=()=>saveSchedule();els.refreshScheduleButton.onclick=()=>refreshSchedule();els.refreshScheduleOnPiButton.onclick=()=>sendCommand('reload-schedule')}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
