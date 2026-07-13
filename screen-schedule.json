@@ -3,40 +3,40 @@
   "days": {
     "monday": {
       "enabled": true,
-      "startTime": "10:00",
-      "endTime": "22:00"
+      "startTime": "14:00",
+      "endTime": "21:00"
     },
     "tuesday": {
       "enabled": true,
-      "startTime": "10:00",
-      "endTime": "22:00"
+      "startTime": "14:00",
+      "endTime": "21:00"
     },
     "wednesday": {
       "enabled": true,
-      "startTime": "10:00",
-      "endTime": "22:00"
+      "startTime": "14:00",
+      "endTime": "21:00"
     },
     "thursday": {
       "enabled": true,
-      "startTime": "10:00",
-      "endTime": "22:00"
+      "startTime": "14:00",
+      "endTime": "21:00"
     },
     "friday": {
       "enabled": true,
       "startTime": "10:00",
-      "endTime": "22:00"
+      "endTime": "21:00"
     },
     "saturday": {
       "enabled": true,
       "startTime": "10:00",
-      "endTime": "22:00"
+      "endTime": "21:00"
     },
     "sunday": {
       "enabled": true,
       "startTime": "10:00",
-      "endTime": "22:00"
+      "endTime": "21:00"
     }
   },
-  "updatedAt": "2026-07-13T01:20:45.044Z",
+  "updatedAt": "2026-07-13T02:43:27.303Z",
   "updatedBy": "khif"
 }
