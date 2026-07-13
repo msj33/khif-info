@@ -60,8 +60,10 @@ read_token(){
 }
 
 json_escape(){
-  printf '%s' "$1" |
-    sed 's/\\/\\\\/g; s/"/\\"/g; s/\t/ /g; s/\r//g; s/\n/ /g'
+  python3 - <<'PY'
+import json, sys
+sys.stdout.write(json.dumps(sys.stdin.read())[1:-1])
+PY
 }
 
 json_get_string(){
