@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "days": {
     "monday": {
       "enabled": true,
@@ -37,6 +37,6 @@
       "endTime": "22:00"
     }
   },
-  "updatedAt": "2026-07-13T01:06:55.156Z",
+  "updatedAt": "2026-07-13T01:20:45.044Z",
   "updatedBy": "khif"
 }
