@@ -7,7 +7,6 @@ BRANCH="${KHIF_GITHUB_BRANCH:-main}"
 RAW_ROOT="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}"
 SCHEDULE_URL="${RAW_ROOT}/screen-schedule.json"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_PATH="${SCRIPT_DIR}/khif-agent-schedule.sh"
 CRON_MARKER_START="# KHIF-SCHEDULE-CRON-BEGIN"
 CRON_MARKER_END="# KHIF-SCHEDULE-CRON-END"
 
@@ -62,10 +61,17 @@ if [[ -z "$schedule_json" ]]; then
   exit 1
 fi
 
-schedule_lines="$(printf '%s' "$schedule_json" | python3 - "$SCRIPT_PATH" <<'PY'
+schedule_lines="$(printf '%s' "$schedule_json" | python3 - <<'PY'
 import json,sys
 
-data=json.load(sys.stdin)
+data_text=sys.stdin.read()
+if not data_text.strip():
+    sys.exit(0)
+try:
+    data=json.loads(data_text)
+except json.JSONDecodeError:
+    sys.exit(0)
+
 if not data.get('enabled', True):
     sys.exit(0)
 
@@ -96,7 +102,7 @@ for idx, day in enumerate(order):
     else:
         next_day=order[(idx + 1) % len(order)]
         lines.append(f"{em} {eh} * * {cron_day[next_day]} {command_off}")
-lines.append(f"0 3 * * * /usr/bin/env bash '{sys.argv[1]}'")
+lines.append("0 3 * * * /usr/bin/env bash '/opt/khif-agent/khif-agent-schedule.sh'")
 for line in lines:
     print(line)
 PY
