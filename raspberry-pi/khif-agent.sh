@@ -301,20 +301,23 @@ PY
 }
 
 fetch_command_json(){
-  local response
-  response=$(curl -fsSL \
-    -H 'Cache-Control: no-cache' \
-    "${RAW_ROOT}/${COMMAND_PATH}?t=$(date +%s)" \
-    2>/dev/null || true)
+  local api_response
+  local content
 
-  local trimmed
-  trimmed="$(printf '%s' "$response" | tr -d '[:space:]')"
-  if [[ -z "$trimmed" ]]; then
-    log "fetch_command_json: empty or whitespace-only response"
+  api_response="$(api_get_file "$COMMAND_PATH" 2>/dev/null || true)"
+  if [[ -z "$api_response" ]]; then
+    log "fetch_command_json: no API response"
     return 0
   fi
 
-  printf '%s' "$response"
+  content="$(printf '%s' "$api_response" | python3 -c 'import sys,json,base64; data=json.load(sys.stdin); print(base64.b64decode(data.get("content",""
+).encode("ascii")).decode("utf-8"))' 2>/dev/null || true)"
+  if [[ -z "$content" ]]; then
+    log "fetch_command_json: empty decoded content"
+    return 0
+  fi
+
+  printf '%s' "$content"
 }
 uptime_seconds(){
   awk '{print int($1)}' /proc/uptime 2>/dev/null || printf '0'
