@@ -245,15 +245,26 @@ update_command_file(){
   local tmp
 
   tmp="$(mktemp)"
+  printf '%s' "$json" > "$tmp"
 
-  printf '%s' "$json" | DEVICE_ID="$DEVICE_ID" python3 - "$status" "$result" "$error" > "$tmp" <<'PY'
+  if [[ ! -s "$tmp" ]]; then
+    log "update_command_file: empty command JSON"
+    rm -f "$tmp"
+    return 1
+  fi
+
+  DEVICE_ID="$DEVICE_ID" python3 - "$status" "$result" "$error" "$tmp" > "${tmp}.out" <<'PY'
 import json,sys,os
 from datetime import datetime
 
-data=json.load(sys.stdin)
+path=sys.argv[4] if len(sys.argv) > 4 else None
 status=sys.argv[1] if len(sys.argv) > 1 else ''
 result=sys.argv[2] if len(sys.argv) > 2 else ''
 error=sys.argv[3] if len(sys.argv) > 3 else ''
+if not path:
+    raise SystemExit('Missing temp file path')
+with open(path,'r',encoding='utf-8') as fp:
+    data=json.load(fp)
 if status:
     data["status"] = status
 elif "status" not in data:
@@ -270,6 +281,16 @@ json.dump(data, sys.stdout, indent=2)
 sys.stdout.write("\n")
 PY
 
+  local rc=$?
+
+  if [[ $rc -ne 0 ]]; then
+    log "update_command_file: python failed with exit $rc"
+    rm -f "$tmp" "${tmp}.out"
+    return 1
+  fi
+
+  mv "${tmp}.out" "$tmp"
+
   if ! api_put_json_file "$COMMAND_PATH" "$tmp"; then
     rm -f "$tmp"
     return 1
@@ -280,9 +301,18 @@ PY
 }
 
 fetch_command_json(){
-  curl -fsS \
+  local response
+  response=$(curl -fsSL \
+    -H 'Cache-Control: no-cache' \
     "${RAW_ROOT}/${COMMAND_PATH}?t=$(date +%s)" \
-    2>/dev/null || true
+    2>/dev/null || true)
+
+  if [[ -z "$response" ]]; then
+    log "fetch_command_json: empty response"
+    return 0
+  fi
+
+  printf '%s' "$response"
 }
 uptime_seconds(){
   awk '{print int($1)}' /proc/uptime 2>/dev/null || printf '0'
@@ -508,8 +538,15 @@ check_command(){
 
   json="$(fetch_command_json)"
 
-  [[ -z "$json" ]] && return 0
+  if [[ -z "$json" ]]; then
+    log "check_command: no command JSON available"
+    return 0
+  fi
 
+  if ! printf '%s\n' "$json" | python3 -c 'import sys, json; json.load(sys.stdin)' >/dev/null 2>&1; then
+    log "check_command: invalid JSON from command file"
+    return 0
+  fi
 
   command_id="$(printf '%s\n' "$json" | json_get_string id)"
   device_id="$(printf '%s\n' "$json" | json_get_string deviceId)"
