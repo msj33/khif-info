@@ -43,27 +43,30 @@ async function writeJsonFile(path,obj,sha){
     return await stateContent(path,{method:'PUT',body:JSON.stringify(body)})
   }
 
-  if (!sha) {
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    if (!sha) {
+      try {
+        const existing = await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
+        sha = existing.sha
+      } catch (error) {
+        if (!String(error?.message || '').includes('404')) throw error
+      }
+    }
+
     try {
-      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
-      sha=existing.sha
+      const res = await putFile(sha)
+      return res.content?.sha || null
     } catch (error) {
-      if (!String(error?.message||'').includes('404')) throw error
+      const message = String(error?.message || '')
+      if (attempt < 3 && (message.includes('does not match') || message.includes('sha'))) {
+        sha = null
+        continue
+      }
+      throw error
     }
   }
 
-  try {
-    const res = await putFile(sha)
-    return res.content?.sha||null
-  } catch (error) {
-    const message=String(error?.message||'')
-    if (message.includes('does not match') || message.includes('sha')) {
-      const existing=await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`)
-      const res = await putFile(existing.sha)
-      return res.content?.sha||null
-    }
-    throw error
-  }
+  throw new Error('Failed to write JSON file after retrying SHA mismatch')
 }
 function formatDate(value){if(!value)return'-';const d=new Date(value);return Number.isNaN(d.getTime())?String(value):d.toLocaleString('da-DK')}
 function formatUptime(seconds){const s=Number(seconds||0);if(!s)return'-';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60);return d>0?`${d}d ${h}t ${m}m`:`${h}t ${m}m`}
