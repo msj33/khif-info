@@ -77,7 +77,6 @@ save_last_command_id(){
   printf '%s' "$1" > "$LAST_COMMAND_FILE"
 }
 
-
 #
 # Curl helper
 # Used only where HTTP errors should be reported
@@ -139,7 +138,6 @@ _curl_with_error(){
   return 0
 }
 
-
 #
 # GitHub GET
 # 404 is allowed because status files may not exist yet
@@ -159,7 +157,6 @@ api_get_file(){
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "${API_ROOT}/${path}"
 }
-
 
 #
 # GitHub PUT content API
@@ -319,6 +316,7 @@ fetch_command_json(){
 
   printf '%s' "$content"
 }
+
 uptime_seconds(){
   awk '{print int($1)}' /proc/uptime 2>/dev/null || printf '0'
 }
@@ -353,7 +351,6 @@ vcgencmd_path(){
     return 1
   fi
 }
-
 
 write_status(){
   local last_command="${1:-}"
@@ -414,6 +411,42 @@ EOF
 }
 
 
+bring_browser_home(){
+  local display="${DISPLAY:-:0}"
+  local xauth="${XAUTHORITY:-}"
+  local candidate
+  local url="https://msj33.github.io/khif-info/"
+  local browser_window=""
+  local browser_windows
+
+  if [[ -z "$xauth" ]]; then
+    for candidate in /home/pi/.Xauthority /home/dietpi/.Xauthority /root/.Xauthority; do
+      if [[ -f "$candidate" ]]; then
+        xauth="$candidate"
+        break
+      fi
+    done
+  fi
+
+  if command -v xdotool >/dev/null 2>&1; then
+    browser_windows="$(DISPLAY="$display" XAUTHORITY="$xauth" xdotool search --onlyvisible 2>/dev/null || true)"
+    if [[ -n "$browser_windows" ]]; then
+      for browser_window in $browser_windows; do
+        DISPLAY="$display" XAUTHORITY="$xauth" xdotool windowactivate --sync "$browser_window" >/dev/null 2>&1 || true
+        DISPLAY="$display" XAUTHORITY="$xauth" xdotool key --window "$browser_window" --clearmodifiers ctrl+l >/dev/null 2>&1 || true
+        sleep 0.2
+        DISPLAY="$display" XAUTHORITY="$xauth" xdotool type --window "$browser_window" --delay 10 "$url" >/dev/null 2>&1 || true
+        if DISPLAY="$display" XAUTHORITY="$xauth" xdotool key --window "$browser_window" --clearmodifiers Return >/dev/null 2>&1; then
+          return 0
+        fi
+      done
+    fi
+  fi
+
+  return 1
+}
+
+
 restart_browser(){
   local display="${DISPLAY:-:0}"
   local xauth="${XAUTHORITY:-}"
@@ -451,17 +484,34 @@ restart_browser(){
 
 
 reload_page(){
+  local cgroup_pid
+  if bring_browser_home; then
+    printf 'ok: browser returned to home'
+    return 0
+  fi
+
   if command -v xdotool >/dev/null 2>&1; then
-    DISPLAY=:0 \
-    XAUTHORITY=/home/pi/.Xauthority \
-    xdotool key --clearmodifiers F5 >/dev/null 2>&1 && {
+    if DISPLAY="${DISPLAY:-:0}" xdotool key --clearmodifiers F5 >/dev/null 2>&1; then
       printf 'ok: F5 sent'
       return 0
-    }
+    fi
+  fi
+
+  if pgrep -af 'chromium|chromium-browser|chrome' >/dev/null 2>&1; then
+    cgroup_pid="$(pgrep -af 'chromium|chromium-browser|chrome' | head -n1 | awk '{print $1}' || true)"
+    if [[ -n "$cgroup_pid" ]]; then
+      kill -s SIGUSR1 "$cgroup_pid" >/dev/null 2>&1 || true
+      sleep 1
+      if pgrep -af 'chromium|chromium-browser|chrome' >/dev/null 2>&1; then
+        printf 'ok: browser process signalled'
+        return 0
+      fi
+    fi
   fi
 
   restart_browser
 }
+
 
 screen_power_state(){
   local vcgencmd
@@ -517,7 +567,7 @@ execute_command(){
         printf 'ok: screen off'
       else
         output="${output//$'\n'/ }"
-        log "Screen off failed: ${output}"
+        log "Screen on failed: ${output}"
         printf 'error: screen off failed: %s' "${output}"
       fi
       ;;
@@ -552,9 +602,7 @@ execute_command(){
   esac
 }
 
-
 check_command(){
-
   local json
   local command_id
   local command
@@ -564,7 +612,6 @@ check_command(){
   local result
   local now_epoch
   local exp_epoch
-
 
   json="$(fetch_command_json)"
 
@@ -606,9 +653,7 @@ check_command(){
      "$device_id" != "all" ]] &&
      return 0
 
-
   if [[ -n "$expires_at" ]]; then
-
     now_epoch="$(date -u +%s)"
 
     exp_epoch="$(date -u -d "$expires_at" +%s 2>/dev/null || printf '0')"
@@ -627,7 +672,6 @@ check_command(){
       return 0
     fi
   fi
-
 
   case "$command" in
 
@@ -650,7 +694,6 @@ check_command(){
 
       ;;
 
-
     *)
 
       save_last_command_id "$command_id"
@@ -665,8 +708,8 @@ check_command(){
 
   esac
 }
-main(){
 
+main(){
   if [[ ! -r "$TOKEN_FILE" ]]; then
     log "Token file missing or unreadable: $TOKEN_FILE"
 
@@ -680,10 +723,8 @@ main(){
     exit 1
   fi
 
-
   local last_status=0
   local now
-
 
   while true; do
 
@@ -691,9 +732,7 @@ main(){
       log "Command check failed: ${last_agent_error:-unknown error}"
     }
 
-
     now="$(date +%s)"
-
 
     if (( now - last_status >= STATUS_INTERVAL )); then
 
@@ -707,11 +746,9 @@ main(){
 
     fi
 
-
     sleep "$COMMAND_INTERVAL"
 
   done
 }
-
 
 main "$@"
