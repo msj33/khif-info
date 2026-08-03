@@ -46,7 +46,7 @@
       "enabled": true,
       "kicker": "KHIF - Info",
       "title": "Flere Frivillige søges 🫵🙏",
-      "text": "KHIF søger altid frivillige - Er du den næste KHIF ildsjæl?\n\nStøt fælleskabet og blive aktiv frivillig - Du bliver måske afhængig af det 😉",
+      "text": "KHIF søger altid nye frivillige - Er du den næste KHIF ildsjæl?\n\nVi søger trænere, medlemmer til bestyrelse, cateferie-folk mm.\n\nStøt fælleskabet og blive aktiv frivillig - Du bliver måske helt afhængig af det 😉\n\nKontakt din forening, hvis du vil hjælpe - Eller send en email til khif@khif.info",
       "footer": "Tak fordi du hjælper",
       "backgroundColor": "#3b0764",
       "textColor": "#faf5ff",
@@ -143,8 +143,8 @@
     }
   ],
   "meta": {
-    "version": 52,
-    "updatedAt": "2026-08-03T23:03:03.355Z",
+    "version": 53,
+    "updatedAt": "2026-08-03T23:06:00.186Z",
     "updatedBy": "khif"
   },
   "config": {
