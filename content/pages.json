@@ -20,7 +20,7 @@
       "kicker": " Fodbold - Nyhed",
       "title": "Ny fodbold tribune",
       "text": "KHIF Fodbold har fået en flot ny tribune ved kunstgræsbanen\n\nDer er plads til 120 tilskuere som kan sidde overdækket\n\nLæs mere info om projektet og sponsorer på www.khiftribune.dk",
-      "footer": "Kom og hep!",
+      "footer": "Tak for støtten!",
       "backgroundColor": "#064e3b",
       "textColor": "#ecfdf5",
       "accentColor": "#34d399",
@@ -34,7 +34,7 @@
       "enabled": true,
       "kicker": "Volleyball - Info",
       "title": "Vil du spille Volley? 🏐",
-      "text": "Vi spiller volleyball hver torsdag fra 20.00-22.00\n\nVil du være med?\n\nBare mød op eller kontakt\nMichael Feile - michaelfeile@gmail.com / Mobil: 31181191",
+      "text": "Vi spiller volleyball hver torsdag fra 20.00-22.00 fra September\n\nVil du være med?\n\nBare mød op eller kontakt\nMichael Feile - michaelfeile@gmail.com / Mobil: 31181191",
       "footer": "",
       "backgroundColor": "#1e3a8a",
       "textColor": "#eff6ff",
@@ -140,11 +140,23 @@
       "accentColor": "#f59e0b",
       "image": "",
       "images": []
+    },
+    {
+      "enabled": true,
+      "kicker": "Fitness - Info",
+      "title": "Træn i KHIF Fitness 💪",
+      "text": "Træn fra kun 125.- om måned 🤩\n\n3 måneder medlemskab - 450 kr.\n6 måneder medlemskab - 750 kr.",
+      "footer": "",
+      "backgroundColor": "#111827",
+      "textColor": "#f9fafb",
+      "accentColor": "#f59e0b",
+      "images": [],
+      "image": ""
     }
   ],
   "meta": {
-    "version": 53,
-    "updatedAt": "2026-08-03T23:06:00.186Z",
+    "version": 54,
+    "updatedAt": "2026-08-03T23:15:24.072Z",
     "updatedBy": "khif"
   },
   "config": {
