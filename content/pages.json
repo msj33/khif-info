@@ -145,7 +145,7 @@
       "enabled": true,
       "kicker": "Fitness - Info",
       "title": "Træn i KHIF Fitness 💪",
-      "text": "Træn fra kun 125.- om måned 🤩\n\n3 måneder medlemskab - 450 kr.\n6 måneder medlemskab - 750 kr.",
+      "text": "Træn fra kun 125.- om måned 🤩\n\n3 måneder medlemskab - 450 kr.\n6 måneder medlemskab - 750 kr.\n\nSe mere information og indmeld dig via hjemmesiden",
       "footer": "",
       "backgroundColor": "#111827",
       "textColor": "#f9fafb",
@@ -155,8 +155,8 @@
     }
   ],
   "meta": {
-    "version": 54,
-    "updatedAt": "2026-08-03T23:15:24.072Z",
+    "version": 55,
+    "updatedAt": "2026-08-03T23:16:41.998Z",
     "updatedBy": "khif"
   },
   "config": {
