@@ -10,8 +10,11 @@
       "backgroundColor": "#111827",
       "textColor": "#f9fafb",
       "accentColor": "#f59e0b",
-      "image": "",
-      "images": []
+      "image": "/khif-info/assets/uploads/1785796686430-khif-logo.png",
+      "images": [
+        "/khif-info/assets/uploads/1785796686430-khif-logo.png",
+        "/khif-info/assets/uploads/1785796821013-khif-logo.png"
+      ]
     },
     {
       "enabled": true,
@@ -138,8 +141,8 @@
     }
   ],
   "meta": {
-    "version": 49,
-    "updatedAt": "2026-08-03T22:28:04.736Z",
+    "version": 50,
+    "updatedAt": "2026-08-03T22:40:22.940Z",
     "updatedBy": "khif"
   },
   "config": {
