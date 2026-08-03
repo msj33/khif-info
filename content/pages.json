@@ -17,15 +17,18 @@
     },
     {
       "enabled": true,
-      "kicker": " Fodbold - Ny Tribune",
-      "title": "Kunstgræsbanen har fået en tribune",
-      "text": "KHIF Fodbold har fået en flot ny tribune",
+      "kicker": " Fodbold - Nyhed",
+      "title": "Ny fodbold tribune",
+      "text": "KHIF Fodbold har fået en flot ny tribune ved kunstgræsbanen\n\nDer er plads til 120 tilskuere som kan sidde overdækket\n\nLæs mere info om projektet og sponsorer på www.khiftribune.dk",
       "footer": "Kom og hep!",
       "backgroundColor": "#064e3b",
       "textColor": "#ecfdf5",
       "accentColor": "#34d399",
-      "image": "",
-      "images": []
+      "image": "/khif-info/assets/uploads/1785798050538-tribune-1.jpg",
+      "images": [
+        "/khif-info/assets/uploads/1785798050538-tribune-1.jpg",
+        "/khif-info/assets/uploads/1785798180703-tribune-2.jpg"
+      ]
     },
     {
       "enabled": true,
@@ -140,8 +143,8 @@
     }
   ],
   "meta": {
-    "version": 51,
-    "updatedAt": "2026-08-03T22:56:51.612Z",
+    "version": 52,
+    "updatedAt": "2026-08-03T23:03:03.355Z",
     "updatedBy": "khif"
   },
   "config": {
