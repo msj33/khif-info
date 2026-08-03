@@ -12,15 +12,14 @@
       "accentColor": "#f59e0b",
       "image": "/khif-info/assets/uploads/1785796686430-khif-logo.png",
       "images": [
-        "/khif-info/assets/uploads/1785796686430-khif-logo.png",
-        "/khif-info/assets/uploads/1785796821013-khif-logo.png"
+        "/khif-info/assets/uploads/1785796686430-khif-logo.png"
       ]
     },
     {
       "enabled": true,
-      "kicker": " Fodbold - Kampdag",
-      "title": "Weekendens kampe ⚽",
-      "text": "Kolt-Hasselager IF - Solbjerg\nU14 Drenge - Liga 3 - Søndag 11.00 - Bane 1\nU13 Piger - Liga 4 - Søndag 13.00 - Kunstgræs\nSenior - Serie 3 - søndag 16.00 - Bane 1",
+      "kicker": " Fodbold - Ny Tribune",
+      "title": "Kunstgræsbanen har fået en tribune",
+      "text": "KHIF Fodbold har fået en flot ny tribune",
       "footer": "Kom og hep!",
       "backgroundColor": "#064e3b",
       "textColor": "#ecfdf5",
@@ -31,7 +30,7 @@
     {
       "enabled": true,
       "kicker": "Volleyball - Info",
-      "title": "Så starter Volley-sæsonen 🏐",
+      "title": "Vil du spille Volley? 🏐",
       "text": "Vi spiller volleyball hver torsdag fra 20.00-22.00\n\nVil du være med?\n\nBare mød op eller kontakt\nMichael Feile - michaelfeile@gmail.com / Mobil: 31181191",
       "footer": "",
       "backgroundColor": "#1e3a8a",
@@ -43,8 +42,8 @@
     {
       "enabled": true,
       "kicker": "KHIF - Info",
-      "title": "Frivillige søges 🫵🙏",
-      "text": "KHIF søger frivillige - Er du den næste KHIF ildsjæl?\n\nStøt fælleskabet og blive frivillig - Du bliver måske afhængig af det 😉\n\nSkriv til frivillig@khif.info",
+      "title": "Flere Frivillige søges 🫵🙏",
+      "text": "KHIF søger altid frivillige - Er du den næste KHIF ildsjæl?\n\nStøt fælleskabet og blive aktiv frivillig - Du bliver måske afhængig af det 😉",
       "footer": "Tak fordi du hjælper",
       "backgroundColor": "#3b0764",
       "textColor": "#faf5ff",
@@ -66,9 +65,9 @@
     },
     {
       "enabled": true,
-      "kicker": "Badminton - Nyhed",
-      "title": "Flexi-fjer udvides 🏸",
-      "text": "Så er der ny opstart af Flexi-fjer for 8-12 årige - Skal du være med?\n\nLæs mere info på khif.info",
+      "kicker": "Badminton - Book en bane",
+      "title": "Lej en bane for hele sæsonen 26/27",
+      "text": "Der er ledige sæson-tider:\ntirsdage og torsdage fra 18.00-21.00\nonsdage fra 18.00-19.00.\n\nSingle-bane 2.600 kr\nDouble-bane 3000 kr. \n\nFå mere information og book på hjemmsiden",
       "footer": "",
       "backgroundColor": "#7c2d12",
       "textColor": "#fff7ed",
@@ -141,8 +140,8 @@
     }
   ],
   "meta": {
-    "version": 50,
-    "updatedAt": "2026-08-03T22:40:22.940Z",
+    "version": 51,
+    "updatedAt": "2026-08-03T22:56:51.612Z",
     "updatedBy": "khif"
   },
   "config": {
