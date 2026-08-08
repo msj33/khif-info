@@ -17,14 +17,14 @@
       <button id="logoutButton" type="button" class="secondary hidden">Log ud</button>
     </header>
 
-    <section id="loginPanel" class="card">
+    <form id="loginForm" class="card" autocomplete="on">
       <h2>Log ind</h2>
       <p>Brug det fælles redaktør-login.</p>
-      <label>Brugernavn<input id="username" autocomplete="username" /></label>
-      <label>Password<input id="password" type="password" autocomplete="current-password" /></label>
-      <button id="loginButton" type="button">Log ind</button>
+      <label>Brugernavn<input id="username" name="username" autocomplete="username" /></label>
+      <label>Password<input id="password" name="password" type="password" autocomplete="current-password" /></label>
+      <button id="loginButton" type="submit">Log ind</button>
       <p id="loginMessage" class="message">Admin-script indlæses…</p>
-    </section>
+    </form>
 
     <section id="editorPanel" class="hidden">
       <section class="card status-card">
