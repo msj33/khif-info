@@ -28,21 +28,14 @@
 
     <section id="editorPanel" class="hidden">
       <section class="card status-card">
-        <div class="status-summary">
-          <p>Tekniske GitHub-detaljer er samlet under knappen.</p>
-        </div>
-        <div class="status-grid">
-          <div>
-            <p class="status-label">Forventet på infoskærmen</p>
-            <p id="screenEta" class="status-value">-</p>
-            <p id="deployStatus" class="status-pill neutral">Ukendt</p>
+        <div class="actions compact status-actions">
+          <div class="status-buttons">
+            <button type="button" id="saveToScreenButton">Gem til infoskærm</button>
+            <button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button>
+            <button type="button" id="previewAllButton" class="secondary">Preview alle</button>
+            <button type="button" id="technicalDetailsButton" class="secondary">Tekniske detaljer</button>
           </div>
-        </div>
-        <div class="actions compact">
-          <button type="button" id="saveToScreenButton">Gem til infoskærm</button>
-          <button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button>
-          <button type="button" id="previewAllButton" class="secondary">Preview alle</button>
-          <button type="button" id="technicalDetailsButton" class="secondary">Tekniske detaljer</button>
+          <p id="deployStatus" class="status-pill neutral">Ukendt</p>
         </div>
         <p id="topSaveMessage" class="message"></p>
       </section>
