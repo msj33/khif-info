@@ -55,6 +55,7 @@
 
       <div class="layout">
         <aside class="side-menu">
+          <button type="button" id="imageLibraryButton" class="secondary">Billeder</button>
           <nav id="pageTabs" class="tabs"></nav>
           <p class="drag-hint">Tip: Træk sider op/ned for at ændre rækkefølgen.</p>
           <div class="side-actions">
@@ -64,23 +65,6 @@
         </aside>
 
         <form id="editorForm" class="card editor">
-          <section id="basisConfigPanel" class="hidden">
-            <h2>Basis Config</h2>
-            <p class="muted">Globale skriftstørrelser og mediebibliotek.</p>
-            <div class="grid">
-              <label>Lille overskrift <span id="kickerSizeValue" class="value-pill"></span><input id="fontKicker" type="range" min="0.8" max="4" step="0.1" /></label>
-              <label>Titel <span id="titleSizeValue" class="value-pill"></span><input id="fontTitle" type="range" min="2" max="9" step="0.1" /></label>
-              <label>Tekst <span id="textSizeValue" class="value-pill"></span><input id="fontText" type="range" min="1" max="5" step="0.1" /></label>
-              <label>Footer <span id="footerSizeValue" class="value-pill"></span><input id="fontFooter" type="range" min="0.7" max="3" step="0.1" /></label>
-            </div>
-            <hr />
-            <div class="media-head">
-              <h3>Billeder i repoet</h3>
-              <button type="button" id="refreshMediaButton" class="secondary">Genindlæs liste</button>
-            </div>
-            <div id="mediaLibrary" class="media-library"><p class="message">Logger ind…</p></div>
-          </section>
-
           <section id="pageEditorPanel">
             <div class="row"><label class="check"><input id="enabled" type="checkbox" /> Aktiv</label></div>
             <label>Lille overskrift<input id="kicker" class="emoji-target" /></label>
@@ -88,21 +72,24 @@
             <label>Tekst<textarea id="text" class="emoji-target" rows="5"></textarea></label>
             <div class="actions compact"><button id="emojiButton" type="button" class="secondary">Indsæt emoji</button></div>
             <label>Footer<input id="footer" class="emoji-target" /></label>
-            <div class="grid">
-              <label>Baggrundsfarve<input id="backgroundColor" type="color" /></label>
-              <label>Tekstfarve<input id="textColor" type="color" /></label>
-              <label>Accentfarve<input id="accentColor" type="color" /></label>
-            </div>
+            <label>Tema<select id="theme"><option value="">Standard</option><option value="green">Grøn</option><option value="blue">Blå</option><option value="purple">Lilla</option><option value="gold">Gylden</option></select></label>
 
             <div class="image-slots">
-              <div class="image-slot"><label>Billede 1<input id="image1" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage1" type="button" class="secondary">Vælg…</button><button id="uploadImage1" type="button" class="secondary">Upload</button></div></div>
-              <div class="image-slot"><label>Billede 2<input id="image2" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage2" type="button" class="secondary">Vælg…</button><button id="uploadImage2" type="button" class="secondary">Upload</button></div></div>
-              <div class="image-slot"><label>Billede 3<input id="image3" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage3" type="button" class="secondary">Vælg…</button><button id="uploadImage3" type="button" class="secondary">Upload</button></div></div>
+              <div class="image-slot"><label>Billede 1<input id="image1" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage1" type="button" class="secondary">Vælg…</button><button id="uploadImage1" type="button" class="secondary">Upload</button><button id="clearImage1" type="button" class="secondary">Fjern</button></div></div>
+              <div class="image-slot"><label>Billede 2<input id="image2" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage2" type="button" class="secondary">Vælg…</button><button id="uploadImage2" type="button" class="secondary">Upload</button><button id="clearImage2" type="button" class="secondary">Fjern</button></div></div>
+              <div class="image-slot"><label>Billede 3<input id="image3" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage3" type="button" class="secondary">Vælg…</button><button id="uploadImage3" type="button" class="secondary">Upload</button><button id="clearImage3" type="button" class="secondary">Fjern</button></div></div>
             </div>
             <p class="muted">Billede uploades til repoet med det samme, men siden gemmes først, når du klikker <strong>Gem til infoskærm</strong>.</p>
             <div class="actions compact"><button id="clearImagesButton" type="button" class="secondary">Fjern alle billeder fra side</button></div>
             <input id="uploadSlot" type="hidden" value="0" />
             <input id="imageUpload" class="hidden" type="file" accept="image/*" />
+          </section>
+          <section id="imageLibraryPanel" class="card hidden">
+            <div class="media-head">
+              <h3>Billeder i repoet</h3>
+              <button type="button" id="refreshMediaButton" class="secondary">Genindlæs liste</button>
+            </div>
+            <div id="mediaLibrary" class="media-library"><p class="message">Logger ind…</p></div>
           </section>
           <div class="actions"><button type="button" id="previewButton" class="secondary">Preview aktuel side</button></div>
           <p id="saveMessage" class="message"></p>
