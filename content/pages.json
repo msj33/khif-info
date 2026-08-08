@@ -82,7 +82,7 @@
       "enabled": true,
       "kicker": "Fodbold - Arrangement",
       "title": "Fodboldens dag 2026 ⚽",
-      "text": "Sæt kryds i kalender 15 August, hvor KHIF Fodbold igen afholder \"Fodboldens dag\" - Vi glæder os til at se jer",
+      "text": "Igen i år har KHIF Fodbold afholdt \"Fodboldens dag\" - Det var endnu engang en stor succes med mange mennesker på fodbold-anlægget ⚽💚",
       "footer": "",
       "backgroundColor": "#831843",
       "textColor": "#fdf2f8",
@@ -155,8 +155,8 @@
     }
   ],
   "meta": {
-    "version": 55,
-    "updatedAt": "2026-08-03T23:16:41.998Z",
+    "version": 56,
+    "updatedAt": "2026-08-08T21:35:11.322Z",
     "updatedBy": "khif"
   },
   "config": {
