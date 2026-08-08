@@ -7,13 +7,11 @@
       "title": "Velkommen 👋👋",
       "text": "Velkommen til Kolt-Hasselager sportsanlæg💚",
       "footer": "KHIF Info",
-      "backgroundColor": "#111827",
-      "textColor": "#f9fafb",
-      "accentColor": "#f59e0b",
       "image": "/khif-info/assets/uploads/1785796686430-khif-logo.png",
       "images": [
         "/khif-info/assets/uploads/1785796686430-khif-logo.png"
-      ]
+      ],
+      "theme": ""
     },
     {
       "enabled": true,
@@ -155,8 +153,8 @@
     }
   ],
   "meta": {
-    "version": 57,
-    "updatedAt": "2026-08-08T23:07:43.607Z",
+    "version": 58,
+    "updatedAt": "2026-08-08T23:12:24.456Z",
     "updatedBy": "khif"
   },
   "config": {
