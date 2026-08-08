@@ -28,7 +28,10 @@
 
     <section id="editorPanel" class="hidden">
       <section class="card status-card">
-        <div class="status-grid">
+        <div class="status-summary">
+          <p>Tekniske detaljer er samlet under knappen.</p>
+        </div>
+        <div class="status-grid hidden">
           <div>
             <p class="status-label">Senest gemt i GitHub</p>
             <p id="repoVersion" class="status-value">-</p>
@@ -49,6 +52,7 @@
           <button type="button" id="saveToScreenButton">Gem til infoskærm</button>
           <button type="button" id="checkDeployButton" class="secondary">Tjek deploy status</button>
           <button type="button" id="previewAllButton" class="secondary">Preview alle</button>
+          <button type="button" id="technicalDetailsButton" class="secondary">Tekniske detaljer</button>
         </div>
         <p id="topSaveMessage" class="message"></p>
       </section>
@@ -112,6 +116,20 @@
         <li><strong>Undgå</strong> – Pinlige, udstillende og/eller sårbare billeder</li>
       </ol>
       <div class="actions"><button type="button" id="acceptUploadGuidelines">Accepter og fortsæt</button><button type="button" id="cancelUploadGuidelines" class="secondary">Annuller</button></div>
+    </div>
+  </div>
+
+  <div id="technicalDetailsModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>Tekniske detaljer</h2>
+        <button id="closeTechnicalDetails" type="button" class="secondary">Luk</button>
+      </div>
+      <div class="technical-details">
+        <div><strong>Senest gemt i GitHub</strong><br /><span id="modalRepoVersion">-</span><br /><span id="modalRepoUpdated">-</span></div>
+        <div><strong>Aktuel version på GitHub Pages</strong><br /><span id="modalDeployedVersion">-</span><br /><span id="modalDeployedChecked">-</span></div>
+        <div><strong>Status</strong><br /><span id="modalScreenEta">-</span><br /><span id="modalDeployStatus">-</span></div>
+      </div>
     </div>
   </div>
 
