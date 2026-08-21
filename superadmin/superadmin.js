@@ -9,7 +9,7 @@
   const COMMAND_PATH = 'remote/command.json';
   const STATUS_PATH = `remote/status/${DEVICE_ID}.json`;
   const SCHEDULE_PATH = 'remote/screen-schedule.json';
-  const LOGINS_PATH = 'remote/logins.json';
+  const LOGINS_PATH = 'content/logins.json';
   const POLL_MS = 5000;
   const OFFLINE_AFTER_MS = 2 * 60 * 1000;
   const $ = id => document.getElementById(id);
@@ -208,6 +208,20 @@
     return json;
   }
 
+  async function repoContent(path, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}${
+      method === 'GET' ? `?ref=${encodeURIComponent(CONFIG.branch || 'main')}` : ''
+    }`;
+    const res = await fetch(url, {
+      ...options,
+      headers: headers(options.headers || {})
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.message || `GitHub API fejl ${res.status}`);
+    return json;
+  }
+
   async function readJsonFile(path) {
     const file = await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`);
     const encoded = String(file.content || '');
@@ -227,6 +241,56 @@
       const body = { message: `Superadmin update ${path}`, content: utf8ToB64(`${JSON.stringify(obj, null, 2)}\n`), branch: STATE_BRANCH };
       if (currentSha) body.sha = currentSha;
       return stateContent(path, { method: 'PUT', body: JSON.stringify(body) });
+    }
+
+    async function readRepoJsonFile(path) {
+      const file = await repoContent(path);
+      const encoded = String(file.content || '');
+      let parsed = null;
+      if (encoded) {
+        try {
+          parsed = JSON.parse(b64ToUtf8(encoded));
+        } catch (_) {
+          parsed = null;
+        }
+      }
+      return { json: parsed, sha: file.sha };
+    }
+
+    async function writeRepoJsonFile(path, obj, sha) {
+      async function putFile(currentSha) {
+        const body = { message: `Superadmin update ${path}`, content: utf8ToB64(`${JSON.stringify(obj, null, 2)}\n`), branch: CONFIG.branch || 'main' };
+        if (currentSha) body.sha = currentSha;
+        return repoContent(path, { method: 'PUT', body: JSON.stringify(body) });
+      }
+
+      let currentSha = sha;
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        if (!currentSha) {
+          try {
+            const existing = await repoContent(path);
+            currentSha = existing.sha;
+          } catch (error) {
+            const message = String(error?.message || '');
+            if (!message.includes('404') && !message.includes('Not Found')) throw error;
+          }
+        }
+        try {
+          const res = await putFile(currentSha);
+          return res.content?.sha || null;
+        } catch (error) {
+          const message = String(error?.message || '');
+          if (attempt < 3 && (message.includes('does not match') || message.includes('sha') || message.includes('conflict'))) {
+            try {
+              const existing = await repoContent(path);
+              currentSha = existing.sha;
+              continue;
+            } catch (_) {}
+          }
+          throw error;
+        }
+      }
+      throw new Error('Failed to write JSON file after retries');
     }
 
     let currentSha = sha;
@@ -500,14 +564,20 @@
 
   async function refreshLogins() {
     try {
-      const file = await readJsonFile(LOGINS_PATH);
+      const file = await readRepoJsonFile(LOGINS_PATH);
       loginsData = normalizeLogins(file.json);
       loginsSha = file.sha;
       renderLoginAdmin();
     } catch (error) {
       loginsData = defaultLogins();
+      loginsSha = null;
       renderLoginAdmin();
-      msg(els.loginAdminMessage, `Kunne ikke hente logins: ${friendlyError(error)}`, true);
+      const message = String(error?.message || '');
+      if (!message.includes('404') && !message.includes('Not Found')) {
+        msg(els.loginAdminMessage, `Kunne ikke hente logins: ${friendlyError(error)}`, true);
+      } else {
+        msg(els.loginAdminMessage, '');
+      }
     }
   }
 
@@ -515,7 +585,7 @@
     const payload = normalizeLogins(loginsData);
     payload.updatedAt = new Date().toISOString();
     payload.updatedBy = currentLoginUsername || 'superadmin';
-    loginsSha = await writeJsonFile(LOGINS_PATH, payload, loginsSha);
+    loginsSha = await writeRepoJsonFile(LOGINS_PATH, payload, loginsSha);
     loginsData = payload;
     renderLoginAdmin();
   }
