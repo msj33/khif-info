@@ -10,6 +10,8 @@
   const STATUS_PATH = `remote/status/${DEVICE_ID}.json`;
   const SCHEDULE_PATH = 'remote/screen-schedule.json';
   const LOGINS_PATH = 'content/logins.json';
+  const AREAS_PATH = 'content/areas.json';
+  const DEFAULT_AREAS = ['KHIF - Info', 'Fodbold', 'Badminton', 'Gymnastik', 'Tennis', 'Volleyball', 'Fitness', 'Andet'];
   const POLL_MS = 5000;
   const OFFLINE_AFTER_MS = 2 * 60 * 1000;
   const $ = id => document.getElementById(id);
@@ -23,6 +25,8 @@
   let commandCooldownUntil = 0;
   let loginsSha = null;
   let loginsData = null;
+  let areasSha = null;
+  let areasData = null;
   let currentLoginUsername = '';
 
   const els = {
@@ -63,7 +67,11 @@
     newLoginRole: $('newLoginRole'),
     addLoginButton: $('addLoginButton'),
     loginList: $('loginList'),
-    loginAdminMessage: $('loginAdminMessage')
+    loginAdminMessage: $('loginAdminMessage'),
+    newAreaName: $('newAreaName'),
+    addAreaButton: $('addAreaButton'),
+    areaList: $('areaList'),
+    areaAdminMessage: $('areaAdminMessage')
   };
 
   function msg(el, text, error = false) {
@@ -186,6 +194,34 @@
 
   function superadminUsernames() {
     return normalizeLogins(loginsData).users.filter(u => u.role === 'superadmin').map(u => u.username);
+  }
+
+  function normalizeAreaName(value) {
+    return String(value || '').trim();
+  }
+
+  function defaultAreas() {
+    return {
+      areas: [...DEFAULT_AREAS],
+      updatedAt: new Date().toISOString(),
+      updatedBy: 'bootstrap'
+    };
+  }
+
+  function normalizeAreas(payload) {
+    const src = Array.isArray(payload?.areas) ? payload.areas : [];
+    const areas = [];
+    src.forEach(name => {
+      const area = normalizeAreaName(name);
+      if (!area) return;
+      if (areas.includes(area)) return;
+      areas.push(area);
+    });
+    return {
+      areas: areas.length ? areas : [...DEFAULT_AREAS],
+      updatedAt: payload?.updatedAt || new Date().toISOString(),
+      updatedBy: payload?.updatedBy || 'superadmin'
+    };
   }
 
   function headers(extra = {}) {
@@ -657,6 +693,83 @@
     }
   }
 
+  function renderAreasAdmin() {
+    if (!els.areaList) return;
+    const areas = normalizeAreas(areasData).areas;
+    els.areaList.innerHTML = areas
+      .map(
+        area => `<div class="schedule-day">
+          <p class="status-value">${area}</p>
+          <div class="actions">
+            <button type="button" class="danger" data-remove-area="${area.replace(/"/g, '&quot;')}">Fjern område</button>
+          </div>
+        </div>`
+      )
+      .join('');
+    els.areaList.querySelectorAll('[data-remove-area]').forEach(btn => {
+      btn.onclick = () => removeArea(btn.getAttribute('data-remove-area') || '');
+    });
+  }
+
+  async function refreshAreas() {
+    try {
+      const file = await readRepoJsonFile(AREAS_PATH);
+      areasData = normalizeAreas(file.json);
+      areasSha = file.sha;
+      renderAreasAdmin();
+    } catch (error) {
+      const message = String(error?.message || '');
+      areasData = defaultAreas();
+      areasSha = null;
+      renderAreasAdmin();
+      if (!message.includes('404') && !message.includes('Not Found')) {
+        msg(els.areaAdminMessage, `Kunne ikke hente områder: ${friendlyError(error)}`, true);
+      } else {
+        msg(els.areaAdminMessage, '');
+      }
+    }
+  }
+
+  async function saveAreas() {
+    const payload = normalizeAreas(areasData);
+    payload.updatedAt = new Date().toISOString();
+    payload.updatedBy = currentLoginUsername || 'superadmin';
+    areasSha = await writeRepoJsonFile(AREAS_PATH, payload, areasSha);
+    areasData = payload;
+    renderAreasAdmin();
+  }
+
+  async function addArea() {
+    try {
+      const area = normalizeAreaName(els.newAreaName?.value);
+      if (!area) throw new Error('Område mangler.');
+      const payload = normalizeAreas(areasData);
+      if (payload.areas.includes(area)) throw new Error('Område findes allerede.');
+      payload.areas.push(area);
+      areasData = payload;
+      await saveAreas();
+      els.newAreaName.value = '';
+      msg(els.areaAdminMessage, 'Område tilføjet.');
+    } catch (error) {
+      msg(els.areaAdminMessage, friendlyError(error), true);
+    }
+  }
+
+  async function removeArea(areaName) {
+    try {
+      const area = normalizeAreaName(areaName);
+      if (!area) throw new Error('Ugyldigt område.');
+      const payload = normalizeAreas(areasData);
+      payload.areas = payload.areas.filter(name => name !== area);
+      if (!payload.areas.length) throw new Error('Der skal være mindst ét område.');
+      areasData = payload;
+      await saveAreas();
+      msg(els.areaAdminMessage, 'Område fjernet.');
+    } catch (error) {
+      msg(els.areaAdminMessage, friendlyError(error), true);
+    }
+  }
+
   async function login() {
     try {
       msg(els.loginMessage, 'Logger ind…');
@@ -674,7 +787,7 @@
       els.logoutButton.classList.remove('hidden');
       els.password.value = '';
       msg(els.loginMessage, '');
-      await Promise.all([refreshStatus(), refreshSchedule(), refreshLogins()]);
+      await Promise.all([refreshStatus(), refreshSchedule(), refreshLogins(), refreshAreas()]);
       statusTimer = setInterval(refreshStatus, POLL_MS);
     } catch (error) {
       token = null;
@@ -700,6 +813,7 @@
     els.refreshScheduleButton.onclick = () => refreshSchedule();
     els.refreshScheduleOnPiButton.onclick = () => sendCommand('reload-schedule');
     els.addLoginButton.onclick = () => addLogin();
+    els.addAreaButton.onclick = () => addArea();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
