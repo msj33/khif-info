@@ -243,56 +243,6 @@
       return stateContent(path, { method: 'PUT', body: JSON.stringify(body) });
     }
 
-    async function readRepoJsonFile(path) {
-      const file = await repoContent(path);
-      const encoded = String(file.content || '');
-      let parsed = null;
-      if (encoded) {
-        try {
-          parsed = JSON.parse(b64ToUtf8(encoded));
-        } catch (_) {
-          parsed = null;
-        }
-      }
-      return { json: parsed, sha: file.sha };
-    }
-
-    async function writeRepoJsonFile(path, obj, sha) {
-      async function putFile(currentSha) {
-        const body = { message: `Superadmin update ${path}`, content: utf8ToB64(`${JSON.stringify(obj, null, 2)}\n`), branch: CONFIG.branch || 'main' };
-        if (currentSha) body.sha = currentSha;
-        return repoContent(path, { method: 'PUT', body: JSON.stringify(body) });
-      }
-
-      let currentSha = sha;
-      for (let attempt = 1; attempt <= 3; attempt += 1) {
-        if (!currentSha) {
-          try {
-            const existing = await repoContent(path);
-            currentSha = existing.sha;
-          } catch (error) {
-            const message = String(error?.message || '');
-            if (!message.includes('404') && !message.includes('Not Found')) throw error;
-          }
-        }
-        try {
-          const res = await putFile(currentSha);
-          return res.content?.sha || null;
-        } catch (error) {
-          const message = String(error?.message || '');
-          if (attempt < 3 && (message.includes('does not match') || message.includes('sha') || message.includes('conflict'))) {
-            try {
-              const existing = await repoContent(path);
-              currentSha = existing.sha;
-              continue;
-            } catch (_) {}
-          }
-          throw error;
-        }
-      }
-      throw new Error('Failed to write JSON file after retries');
-    }
-
     let currentSha = sha;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       if (!currentSha) {
@@ -311,6 +261,56 @@
         if (attempt < 3 && (message.includes('does not match') || message.includes('sha') || message.includes('conflict'))) {
           try {
             const existing = await stateContent(`${path}?ref=${encodeURIComponent(STATE_BRANCH)}`);
+            currentSha = existing.sha;
+            continue;
+          } catch (_) {}
+        }
+        throw error;
+      }
+    }
+    throw new Error('Failed to write JSON file after retries');
+  }
+
+  async function readRepoJsonFile(path) {
+    const file = await repoContent(path);
+    const encoded = String(file.content || '');
+    let parsed = null;
+    if (encoded) {
+      try {
+        parsed = JSON.parse(b64ToUtf8(encoded));
+      } catch (_) {
+        parsed = null;
+      }
+    }
+    return { json: parsed, sha: file.sha };
+  }
+
+  async function writeRepoJsonFile(path, obj, sha) {
+    async function putFile(currentSha) {
+      const body = { message: `Superadmin update ${path}`, content: utf8ToB64(`${JSON.stringify(obj, null, 2)}\n`), branch: CONFIG.branch || 'main' };
+      if (currentSha) body.sha = currentSha;
+      return repoContent(path, { method: 'PUT', body: JSON.stringify(body) });
+    }
+
+    let currentSha = sha;
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      if (!currentSha) {
+        try {
+          const existing = await repoContent(path);
+          currentSha = existing.sha;
+        } catch (error) {
+          const message = String(error?.message || '');
+          if (!message.includes('404') && !message.includes('Not Found')) throw error;
+        }
+      }
+      try {
+        const res = await putFile(currentSha);
+        return res.content?.sha || null;
+      } catch (error) {
+        const message = String(error?.message || '');
+        if (attempt < 3 && (message.includes('does not match') || message.includes('sha') || message.includes('conflict'))) {
+          try {
+            const existing = await repoContent(path);
             currentSha = existing.sha;
             continue;
           } catch (_) {}
