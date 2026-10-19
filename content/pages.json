@@ -70,7 +70,7 @@
       "enabled": true,
       "kicker": "Andet",
       "title": "Hop & Lop 🎈",
-      "text": "KHIF Hallen & Lions inviterer til Hop og Lop 🎈🏰👕\n\nLørdag d. 24/10 fra 10-15",
+      "text": "KHIF Hallen & Lions inviterer til Hop og Lop 🎈🏰👕\n\nLørdag d. 24/10 fra 10.00-15.00\n\nKig forbi til en hyggelig dag",
       "footer": "",
       "image": "",
       "images": [],
@@ -140,8 +140,8 @@
     }
   ],
   "meta": {
-    "version": 65,
-    "updatedAt": "2026-10-19T16:57:32.593Z",
+    "version": 66,
+    "updatedAt": "2026-10-19T16:59:38.559Z",
     "updatedBy": "khif"
   },
   "config": {
