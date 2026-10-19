@@ -128,11 +128,20 @@
       "images": [],
       "image": "",
       "theme": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Fodbold",
+      "title": "Pokalkamp imod AGF ⚽️",
+      "text": "U14 pigerne fra Kolt-Hasselager IF tager hjem imod AGF ⚽️\n\nKom og hep torsdag d. 22 Oktober kl. 17.30 på kunstgræsbanen 👏 👏",
+      "theme": "",
+      "images": [],
+      "image": ""
     }
   ],
   "meta": {
-    "version": 64,
-    "updatedAt": "2026-10-19T16:53:34.777Z",
+    "version": 65,
+    "updatedAt": "2026-10-19T16:57:32.593Z",
     "updatedBy": "khif"
   },
   "config": {
