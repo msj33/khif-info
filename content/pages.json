@@ -68,9 +68,9 @@
     },
     {
       "enabled": true,
-      "kicker": "Fodbold",
-      "title": "Fodboldens dag 2026 ⚽",
-      "text": "Igen i år har KHIF Fodbold afholdt \"Fodboldens dag\" - Det var endnu engang en stor succes med mange mennesker på fodbold-anlægget ⚽💚",
+      "kicker": "Andet",
+      "title": "Hop & Lop 🎈",
+      "text": "KHIF Hallen & Lions inviterer til Hop og Lop 🎈🏰👕\n\nLørdag d. 24/10 fra 10-15",
       "footer": "",
       "image": "",
       "images": [],
@@ -131,8 +131,8 @@
     }
   ],
   "meta": {
-    "version": 61,
-    "updatedAt": "2026-10-18T13:58:02.265Z",
+    "version": 62,
+    "updatedAt": "2026-10-19T16:51:27.215Z",
     "updatedBy": "khif"
   },
   "config": {
