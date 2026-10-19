@@ -50,7 +50,7 @@
       "enabled": true,
       "kicker": "KHIF - Info",
       "title": "Tak til vores sponsorer 👏",
-      "text": "KHIF siger endnu engang tak for samarbejdet til alle vores sponsorer og partnere - I er med til at løfte fælleskabet her i byen og skabe gode oplevelser fra barn til voksen 💚",
+      "text": "KHIF siger tak for samarbejdet til alle vores sponsorer og partnere - I er med til at løfte fælleskabet her i byen og skabe gode oplevelser fra barn til voksen 💚",
       "footer": "",
       "image": "",
       "images": [],
@@ -131,8 +131,8 @@
     }
   ],
   "meta": {
-    "version": 62,
-    "updatedAt": "2026-10-19T16:51:27.215Z",
+    "version": 63,
+    "updatedAt": "2026-10-19T16:52:02.861Z",
     "updatedBy": "khif"
   },
   "config": {
