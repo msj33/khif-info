@@ -137,11 +137,22 @@
       "theme": "",
       "images": [],
       "image": ""
+    },
+    {
+      "enabled": true,
+      "kicker": "Fodbold",
+      "title": "Spændende Finale-kamp  på lørdag ⚽",
+      "text": "Vores dygtige U15 piger kæmper om at vinde Liga 2 🤩\n\nDer spilles om 1. pladsen imod Aabyhøj 🏆🔥\n\nKom forbi os støt U15 pigerne på tribunen 👏 - Vi ses Lørdag kl. 15.00 💚",
+      "theme": "",
+      "images": [
+        "/khif-info/assets/uploads/1792607452100-screenshot-2026-10-21-at-20-28-45.png"
+      ],
+      "image": "/khif-info/assets/uploads/1792607452100-screenshot-2026-10-21-at-20-28-45.png"
     }
   ],
   "meta": {
-    "version": 67,
-    "updatedAt": "2026-10-19T18:40:51.817Z",
+    "version": 68,
+    "updatedAt": "2026-10-21T18:30:54.141Z",
     "updatedBy": "khif"
   },
   "config": {
