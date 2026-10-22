@@ -132,15 +132,6 @@
     {
       "enabled": true,
       "kicker": "Fodbold",
-      "title": "Pokalkamp imod AGF 🏆⚽️",
-      "text": "U14 pigerne fra Kolt-Hasselager IF imod AGF på hjemmebanen i DBU Pokalturneringen🏆 ⚽️\n\nKom og hep torsdag d. 22 Oktober kl. 17.30 på kunstgræsbanen 👏 👏",
-      "theme": "",
-      "images": [],
-      "image": ""
-    },
-    {
-      "enabled": true,
-      "kicker": "Fodbold",
       "title": "Spændende Finale-kamp  på lørdag ⚽",
       "text": "Vores dygtige U15 piger kæmper om at vinde Liga 2 🤩\n\nDer spilles om 1. pladsen imod Aabyhøj 🏆🔥\n\nKom forbi os støt U15 pigerne på tribunen 👏 - Vi ses Lørdag kl. 10.00 💚",
       "theme": "",
@@ -151,8 +142,8 @@
     }
   ],
   "meta": {
-    "version": 69,
-    "updatedAt": "2026-10-21T21:30:48.582Z",
+    "version": 70,
+    "updatedAt": "2026-10-22T22:18:29.938Z",
     "updatedBy": "khif"
   },
   "config": {
