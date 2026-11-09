@@ -144,7 +144,13 @@ function updateExpirationUI(page){
  if(page&&expired)page.enabled=false;
  const chooseButton=$('chooseExpirationDate');
  const clearButton=$('clearExpirationDate');
- if(chooseButton)chooseButton.textContent=input.value?`Valgt: ${input.value.split('-').reverse().join('.')}`:'Vælg dato i kalender';
+ const dateLabel=$('expirationDateLabel');
+ if(dateLabel){
+  dateLabel.replaceChildren();
+  if(input.value)dateLabel.textContent=input.value.split('-').reverse().join('/');
+  else{const placeholder=document.createElement('em');placeholder.textContent='Ingen udløbsdato valgt';dateLabel.appendChild(placeholder)}
+ }
+ if(chooseButton)chooseButton.textContent='Vælg dato';
  if(clearButton)clearButton.hidden=!input.value;
 }
 
@@ -294,7 +300,7 @@ const expirationInput=$('expiresOn');
 expirationInput?.addEventListener('change',()=>updateExpirationUI(data?.pages?.[selectedIndex]));
 $('chooseExpirationDate')?.addEventListener('click',()=>{
  if(typeof expirationInput?.showPicker==='function')expirationInput.showPicker();
- else expirationInput?.focus();
+ else expirationInput?.click();
 });
 $('clearExpirationDate')?.addEventListener('click',()=>{
  if(!expirationInput)return;

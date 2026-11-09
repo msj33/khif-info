@@ -61,9 +61,12 @@
             <label>Tekst<textarea id="text" class="emoji-target" rows="5"></textarea></label>
             <div class="actions compact"><button id="emojiButton" type="button" class="secondary">Indsæt emoji</button></div>
             <label>Udløbsdato
-              <input id="expiresOn" type="date" />
-              <button id="chooseExpirationDate" type="button" class="secondary">Vælg dato i kalender</button>
-              <button id="clearExpirationDate" type="button" class="secondary">Fjern dato</button>
+              <span id="expirationDateLabel" class="expiration-date-label"><em>Ingen udløbsdato valgt</em></span>
+              <input id="expiresOn" class="date-picker-input" type="date" aria-hidden="true" tabindex="-1" />
+              <div class="actions compact">
+                <button id="chooseExpirationDate" type="button" class="secondary">Vælg dato</button>
+                <button id="clearExpirationDate" type="button" class="secondary" hidden>Fjern dato</button>
+              </div>
             </label>
 
             <div class="image-slots">
