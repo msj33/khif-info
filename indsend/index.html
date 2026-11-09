@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="google" content="notranslate" />
+  <title>Indsend nyhed - KHIF Info</title>
+  <link rel="stylesheet" href="./indsend.css" />
+</head>
+<body>
+  <main class="shell">
+    <a class="back-link" href="../">← KHIF Info</a>
+    <section class="card">
+      <p class="eyebrow">KHIF Info</p>
+      <h1>Indsend en nyhed</h1>
+      <p class="muted">Forslaget sendes til redaktionen til godkendelse.</p>
+      <form id="submissionForm">
+        <label for="area">Område</label>
+        <select id="area" required><option value="">Henter områder…</option></select>
+        <label for="title">Titel</label>
+        <input id="title" maxlength="48" required />
+        <label for="text">Tekst <span id="textCount">0/200</span></label>
+        <textarea id="text" maxlength="200" rows="6" required></textarea>
+        <label class="honeypot" aria-hidden="true">Website<input id="website" tabindex="-1" autocomplete="off" /></label>
+        <button id="submitButton" type="submit">Indsend</button>
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+  <script src="../inbox-config.js"></script>
+  <script src="./indsend.js"></script>
+</body>
+</html>

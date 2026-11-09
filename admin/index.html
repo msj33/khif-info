@@ -42,6 +42,7 @@
 
       <div class="layout">
         <aside class="side-menu">
+          <button type="button" id="inboxButton" class="secondary inbox-button">Indbakke <span id="inboxBadge" class="inbox-badge hidden">0</span></button>
           <button type="button" id="imageLibraryButton" class="secondary">Billeder</button>
           <nav id="pageTabs" class="tabs"></nav>
           <p class="drag-hint">Tip: Træk sider op/ned for at ændre rækkefølgen.</p>
@@ -84,6 +85,11 @@
               <button type="button" id="refreshMediaButton" class="secondary">Genindlæs liste</button>
             </div>
             <div id="mediaLibrary" class="media-library"><p class="message">Logger ind…</p></div>
+          </section>
+          <section id="inboxPanel" class="inbox-panel hidden">
+            <div class="inbox-head"><div><h2>Indbakke</h2><p class="muted">Viser kun nyheder fra dine områder.</p></div><div class="actions compact"><button type="button" id="closeInboxButton" class="secondary">Tilbage til sider</button><button type="button" id="refreshInboxButton" class="secondary">Opdater</button></div></div>
+            <div id="inboxList" class="inbox-list"></div>
+            <p id="inboxMessage" class="message" aria-live="polite"></p>
           </section>
           <div class="actions"><button type="button" id="previewButton" class="secondary">Preview aktuel side</button><button type="button" id="saveCurrentPageButton">Gem aktuel side</button></div>
           <p id="saveMessage" class="message"></p>
@@ -133,6 +139,7 @@
   </div>
 
   <script src="./secret.js"></script>
+  <script src="../inbox-config.js"></script>
   <script src="./emoji-catalog.js"></script>
   <script src="./admin.js"></script>
 </body>

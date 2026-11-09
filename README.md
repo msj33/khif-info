@@ -15,6 +15,10 @@ Når du har gemt, bliver indholdet sendt videre til infoskærmen. Den opdaterer 
 
 Sider med en udløbsdato deaktiveres automatisk på selve datoen (dansk lokal tid). En planlagt GitHub Action kører hvert 15. minut og gemmer ændringen i `content/pages.json`, så den også bliver deployet til infoskærmen.
 
+### Anonyme nyhedsforslag
+
+Nyhedsforslag fra `/indsend/` oprettes som GitHub Issues med label `indsendelse`. Cloudflare Worker-koden ligger i `cloudflare/indsend-worker.js`; opret en Worker med denne kode, og tilføj en fine-grained PAT som Worker-secret `INDSEND_PAT_TOKEN` med Issues read/write på dette repo. Indsæt Workerens `workers.dev`-URL i `inbox-config.js`. Den PAT, som `/admin` bruger, skal desuden have Issues read/write, så redaktører kan hente og lukke indsendelser. Indsendelser og lukkede issues udløser ikke GitHub Pages-deploy.
+
 Tips:
 - Upload billeder direkte fra adminpanelet.
 - Brug et kort og tydeligt budskab på hver slide.
