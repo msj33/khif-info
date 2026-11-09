@@ -11,7 +11,7 @@
       "images": [
         "/khif-info/assets/uploads/1785796686430-khif-logo.png"
       ],
-      "theme": ""
+      "theme": "green"
     },
     {
       "enabled": true,
@@ -24,7 +24,7 @@
         "/khif-info/assets/uploads/1785798050538-tribune-1.jpg",
         "/khif-info/assets/uploads/1785798180703-tribune-2.jpg"
       ],
-      "theme": ""
+      "theme": "blue"
     },
     {
       "enabled": true,
@@ -34,7 +34,7 @@
       "footer": "",
       "image": "",
       "images": [],
-      "theme": ""
+      "theme": "purple"
     },
     {
       "enabled": true,
@@ -44,7 +44,7 @@
       "footer": "Tak fordi du hjælper",
       "image": "",
       "images": [],
-      "theme": ""
+      "theme": "gold"
     },
     {
       "enabled": true,
@@ -64,7 +64,8 @@
       "footer": "",
       "image": "",
       "images": [],
-      "theme": ""
+      "theme": "green",
+      "expiresOn": "2026-11-10"
     },
     {
       "enabled": true,
@@ -74,7 +75,7 @@
       "footer": "",
       "image": "",
       "images": [],
-      "theme": ""
+      "theme": "blue"
     },
     {
       "enabled": true,
@@ -87,7 +88,7 @@
         "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg",
         "/khif-info/assets/uploads/1782943644969-733499575-1510539537316323-4246480027590.jpg"
       ],
-      "theme": ""
+      "theme": "purple"
     },
     {
       "enabled": true,
@@ -97,7 +98,7 @@
       "footer": "KHIF Info",
       "image": "",
       "images": [],
-      "theme": ""
+      "theme": "gold"
     },
     {
       "enabled": true,
@@ -117,12 +118,12 @@
       "footer": "",
       "images": [],
       "image": "",
-      "theme": ""
+      "theme": "green"
     }
   ],
   "meta": {
-    "version": 72,
-    "updatedAt": "2026-11-09T21:53:53.155Z",
+    "version": 73,
+    "updatedAt": "2026-11-09T22:28:30.363Z",
     "updatedBy": "khif"
   },
   "config": {
