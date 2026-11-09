@@ -9,24 +9,20 @@
   const submitButton = $('submitButton');
   const message = $('message');
   const API_URL = String(window.KHIF_INBOX_API_URL || '').replace(/\/+$/, '');
+  const AREAS = ['KHIF - Info', 'Fodbold', 'Badminton', 'Gymnastik', 'Tennis', 'Volleyball', 'Fitness', 'Andet'];
 
   function setMessage(text, kind = '') {
     message.textContent = text;
     message.className = `message${kind ? ` ${kind}` : ''}`;
   }
 
-  async function loadAreas() {
+  function loadAreas() {
+    areaSelect.replaceChildren(new Option('Vælg område…', ''));
+    AREAS.forEach(area => areaSelect.add(new Option(area, area)));
     if (!API_URL) {
-      areaSelect.innerHTML = '<option value="">Indsendelse er ikke konfigureret</option>';
       submitButton.disabled = true;
       setMessage('Indsendelsesformularen er ikke sat op endnu.', 'error');
-      return;
     }
-    const response = await fetch(`${API_URL}/areas`, { cache: 'no-store' });
-    const result = await response.json();
-    if (!response.ok || !Array.isArray(result.areas)) throw new Error(result.error || 'Områder kunne ikke hentes.');
-    areaSelect.replaceChildren(new Option('Vælg område…', ''));
-    result.areas.forEach(area => areaSelect.add(new Option(area, area)));
   }
 
   textInput.addEventListener('input', () => {
@@ -61,9 +57,5 @@
     }
   });
 
-  loadAreas().catch(error => {
-    areaSelect.innerHTML = '<option value="">Områder kunne ikke hentes</option>';
-    submitButton.disabled = true;
-    setMessage(error.message, 'error');
-  });
+  loadAreas();
 })();

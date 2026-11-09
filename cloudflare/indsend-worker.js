@@ -32,16 +32,8 @@ async function githubRequest(path, token, options = {}) {
   return body;
 }
 
-async function getAreas() {
-  const response = await fetch(`https://${OWNER}.github.io/${REPO}/content/areas.json`, {
-    cf: { cacheTtl: 60, cacheEverything: true }
-  });
-  if (response.status === 404) return DEFAULT_AREAS;
-  if (!response.ok) throw new Error(`Could not load areas (${response.status})`);
-  const file = await response.json();
-  const bytes = Uint8Array.from(atob(String(file.content || '').replace(/\n/g, '')), char => char.charCodeAt(0));
-  const payload = JSON.parse(new TextDecoder().decode(bytes));
-  return Array.isArray(payload.areas) && payload.areas.length ? payload.areas : DEFAULT_AREAS;
+function getAreas() {
+  return DEFAULT_AREAS;
 }
 
 async function ensureIssueLabel(token) {
@@ -81,11 +73,7 @@ export default {
 
     const url = new URL(request.url);
     if (request.method === 'GET' && url.pathname === '/areas') {
-      try {
-        return jsonResponse({ areas: await getAreas() }, 200, origin);
-      } catch {
-        return jsonResponse({ error: 'Områder kunne ikke hentes.' }, 502, origin);
-      }
+      return jsonResponse({ areas: getAreas() }, 200, origin);
     }
     if (request.method !== 'POST' || url.pathname !== '/submit') {
       return jsonResponse({ error: 'Endpoint ikke fundet.' }, 404, origin);
@@ -113,7 +101,7 @@ export default {
     }
 
     try {
-      const areas = await getAreas();
+      const areas = getAreas();
       if (!areas.includes(area)) return jsonResponse({ error: 'Vælg et gyldigt område.' }, 400, origin);
       await ensureIssueLabel(env.INDSEND_PAT_TOKEN);
       const issue = await githubRequest(`/repos/${OWNER}/${REPO}/issues`, env.INDSEND_PAT_TOKEN, {
