@@ -7,17 +7,30 @@
       "iterations": 250000,
       "salt": "5MkmlHSMCbPYyjwflywKzg==",
       "iv": "c5YQ+5d0LYuDgO3R",
-      "encryptedToken": "81Lak04iumaYmVDicYwTE+0zw5rsR5vOF+Sfuruzu8tH8r9un+DFp5k+fW3OeFRaBg+637a0J/8ZVTyDU1tLERW0FNW0FjCiF7ZbRDmLUDBzRsi9u7EZM4mJwNGNWb6CSOQuEZ35yTC+osVd6w=="
+      "encryptedToken": "81Lak04iumaYmVDicYwTE+0zw5rsR5vOF+Sfuruzu8tH8r9un+DFp5k+fW3OeFRaBg+637a0J/8ZVTyDU1tLERW0FNW0FjCiF7ZbRDmLUDBzRsi9u7EZM4mJwNGNWb6CSOQuEZ35yTC+osVd6w==",
+      "areas": [
+        "KHIF - Info",
+        "Fodbold",
+        "Badminton",
+        "Gymnastik",
+        "Tennis",
+        "Volleyball",
+        "Fitness",
+        "Andet"
+      ]
     },
     {
       "username": "badminton",
       "role": "admin",
       "iterations": 250000,
-      "salt": "NX5y+1ETZDLznGfn4WU40g==",
-      "iv": "ULUFxeagC14RpueT",
-      "encryptedToken": "/vEcsO9Nxkyby/xG+952esRE62mgk3o5mXSIhRJvPlZ1376XVJinu/aXH6j+2vvuRH2MNRVAWdQqH0EZUquDBC4ROQ5Kwr9epf//XaEu9q2R4B8AxRmc5RzEUX1pxj6GNYbqgeehbcpoJ9VgRw=="
+      "salt": "D+4i0dbjSPLAIuLJY023Hw==",
+      "iv": "7m27Y/ys6X0VjMAg",
+      "encryptedToken": "p+t9KccjMyuOSA7Y+WUCoGwe63ZMVLiBQD/UzxVKPcIq6aj21q/t+Nm+xD1APHmyeM4RtoqroG4XnyIuDVe+kPJwX2SJX1dCMRaLZTcZ+QK/pNl4T8cyykDS3qBg4yfeo0u0kotPErabRJKZHw==",
+      "areas": [
+        "Badminton"
+      ]
     }
   ],
-  "updatedAt": "2026-08-21T19:27:43.465Z",
+  "updatedAt": "2026-11-09T22:18:27.947Z",
   "updatedBy": "khif"
 }
