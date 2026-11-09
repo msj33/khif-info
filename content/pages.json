@@ -68,16 +68,6 @@
     },
     {
       "enabled": true,
-      "kicker": "Andet",
-      "title": "Hop & Lop 🎈",
-      "text": "KHIF Hallen & Lions inviterer til Hop og Lop 🎈🏰👕\n\nLørdag d. 24/10 fra 10.00-15.00\n\nKig forbi til en hyggelig dag",
-      "footer": "",
-      "image": "",
-      "images": [],
-      "theme": ""
-    },
-    {
-      "enabled": true,
       "kicker": "KHIF - Info",
       "title": "Glemte sager? 👕👟",
       "text": "Har du glemt noget på KHIF-anlægget - Tjek \"Glemte sager\" kassen ved cafeteriet",
@@ -131,8 +121,8 @@
     }
   ],
   "meta": {
-    "version": 71,
-    "updatedAt": "2026-10-24T13:01:26.330Z",
+    "version": 72,
+    "updatedAt": "2026-11-09T21:53:53.155Z",
     "updatedBy": "khif"
   },
   "config": {
