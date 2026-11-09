@@ -11,7 +11,8 @@
       "images": [
         "/khif-info/assets/uploads/1785796686430-khif-logo.png"
       ],
-      "theme": "green"
+      "theme": "green",
+      "expiresOn": ""
     },
     {
       "enabled": true,
@@ -108,7 +109,7 @@
       "footer": "",
       "image": "",
       "images": [],
-      "theme": "green"
+      "theme": ""
     },
     {
       "enabled": true,
@@ -118,12 +119,13 @@
       "footer": "",
       "images": [],
       "image": "",
-      "theme": "green"
+      "theme": "green",
+      "expiresOn": "2026-11-10"
     }
   ],
   "meta": {
-    "version": 73,
-    "updatedAt": "2026-11-09T22:28:30.363Z",
+    "version": 74,
+    "updatedAt": "2026-11-09T22:32:10.496Z",
     "updatedBy": "khif"
   },
   "config": {
