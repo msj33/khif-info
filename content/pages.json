@@ -76,7 +76,8 @@
       "footer": "",
       "image": "",
       "images": [],
-      "theme": "blue"
+      "theme": "blue",
+      "expiresOn": ""
     },
     {
       "enabled": true,
@@ -89,7 +90,8 @@
         "/khif-info/assets/uploads/1782857882529-730373654-1507274614309482-1196866237921.jpg",
         "/khif-info/assets/uploads/1782943644969-733499575-1510539537316323-4246480027590.jpg"
       ],
-      "theme": "purple"
+      "theme": "purple",
+      "expiresOn": "2026-11-10"
     },
     {
       "enabled": true,
@@ -124,8 +126,8 @@
     }
   ],
   "meta": {
-    "version": 75,
-    "updatedAt": "2026-11-09T22:38:53.756Z",
+    "version": 76,
+    "updatedAt": "2026-11-09T22:43:51.440Z",
     "updatedBy": "khif"
   },
   "config": {
