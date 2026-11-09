@@ -61,7 +61,7 @@
       "enabled": true,
       "kicker": "Badminton",
       "title": "Lej en bane for hele sæsonen 26/27",
-      "text": "Der er ledige sæson-tider:\ntirsdage og torsdage fra 18.00-21.00\nonsdage fra 18.00-19.00.\n\nSingle-bane 2.600 kr\nDouble-bane 3000 kr. \n\nFå mere information og book på hjemmsiden",
+      "text": "Der er ledige sæson-tider:\ntirsdage og torsdage fra 18.00-21.00\nonsdage fra 18.00-19.00.\n\nSingle-bane 2.600 kr\nDouble-bane 3000 kr. \n\nFå mere information og book på hjemmesiden",
       "footer": "",
       "image": "",
       "images": [],
@@ -124,8 +124,8 @@
     }
   ],
   "meta": {
-    "version": 74,
-    "updatedAt": "2026-11-09T22:32:10.496Z",
+    "version": 75,
+    "updatedAt": "2026-11-09T22:38:53.756Z",
     "updatedBy": "khif"
   },
   "config": {
