@@ -81,6 +81,228 @@ function insertAtCursor(el,text){if(!el)return;const s=el.selectionStart??el.val
 function renderEmoji(q=''){if(!els.emojiGrid)return;const query=normalize(q);els.emojiGrid.innerHTML=emojiItems().filter(item=>!query||normalize(`${item.e} ${item.k}`).includes(query)).map(item=>`<button type="button" title="${item.k}">${item.e}</button>`).join('');els.emojiGrid.querySelectorAll('button').forEach(b=>b.onclick=()=>{insertAtCursor(lastEmojiTarget||els.text,b.textContent);els.emojiModal?.classList.add('hidden')})}
 function confirmImageGuidelines(){return new Promise(resolve=>{const modal=$('uploadGuidelinesModal'),ok=$('acceptUploadGuidelines'),cancel=$('cancelUploadGuidelines');if(!modal||!ok||!cancel){resolve(true);return}const done=v=>{modal.classList.add('hidden');ok.onclick=null;cancel.onclick=null;resolve(v)};ok.onclick=()=>done(true);cancel.onclick=()=>done(false);modal.classList.remove('hidden')})}
 async function saveToScreen(){try{msg(els.topSaveMessage||els.saveMessage,els.imageUpload?.files?.[0]?'Uploader billede og gemmer til infoskærm…':'Gemmer til infoskærm…');await savePages();msg(els.topSaveMessage||els.saveMessage,'Gemt til infoskærm. Status opdateres automatisk.')}catch(error){msg(els.topSaveMessage||els.saveMessage,friendlyError(error),true)}}
+const SIDE_THEMES=['green','blue','purple','gold',''];
+window.KHIF_ACTIVE_LOGIN_AREAS=null;
+window.KHIF_ALL_PAGES=[];
+
+function normalizeLogins(logins){
+ const root=normalizeUsername(CONFIG.adminUsername||'admin'),users=[];
+ (Array.isArray(logins?.users)?logins.users:[]).forEach(entry=>{
+  const username=normalizeUsername(entry?.username);
+  if(!username||users.some(user=>user.username===username))return;
+  const role=normalizeRole(entry?.role),iterations=Number(entry?.iterations||CONFIG.iterations||250000);
+  const salt=String(entry?.salt||''),iv=String(entry?.iv||''),encryptedToken=String(entry?.encryptedToken||'');
+  if(!salt||!iv||!encryptedToken)return;
+  users.push({username,role,iterations,salt,iv,encryptedToken,areas:Array.isArray(entry?.areas)?entry.areas.map(normalizeAreaName).filter(Boolean):null});
+ });
+ if(!users.some(user=>user.username===root)){
+  users.push({username:root,role:'superadmin',iterations:Number(CONFIG.iterations||250000),salt:String(CONFIG.salt||''),iv:String(CONFIG.iv||''),encryptedToken:String(CONFIG.encryptedToken||''),areas:null});
+ }
+ return{users};
+}
+
+async function fetchLogins(){
+ const url=`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${LOGINS_PATH}?ref=${encodeURIComponent(CONFIG.branch||'main')}`;
+ const response=await fetch(url,{cache:'no-store',headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}});
+ if(!response.ok)return defaultLogins();
+ const file=await response.json();
+ const encoded=String(file.content||'').replace(/\n/g,'');
+ if(!encoded)return defaultLogins();
+ const parsed=normalizeLogins(JSON.parse(b64ToUtf8(encoded)));
+ const username=normalizeUsername(els.username.value);
+ const user=parsed.users.find(entry=>entry.username===username);
+ window.KHIF_ACTIVE_LOGIN_AREAS=user?.role==='superadmin'||!Array.isArray(user?.areas)?null:user.areas;
+ return parsed;
+}
+
+function renderAreaOptions(selected){
+ if(!els.kicker)return;
+ const allowed=window.KHIF_ACTIVE_LOGIN_AREAS;
+ const options=allowed===null?areaOptions:areaOptions.filter(area=>allowed.includes(area));
+ const selectedValue=normalizeAreaName(selected)||options[0]||DEFAULT_AREAS[0];
+ if(!options.includes(selectedValue)&&allowed===null)options.push(selectedValue);
+ els.kicker.innerHTML=options.map(area=>`<option value="${area.replace(/"/g,'&quot;')}">${area}</option>`).join('');
+ els.kicker.value=options.includes(selectedValue)?selectedValue:(options[0]||'');
+}
+
+function pageExpired(page){
+ const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Copenhagen',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+ const today=`${parts.find(part=>part.type==='year')?.value}-${parts.find(part=>part.type==='month')?.value}-${parts.find(part=>part.type==='day')?.value}`;
+ return Boolean(page?.expiresOn&&page.expiresOn<=today);
+}
+function pageIsActive(page){return page?.enabled!==false&&!pageExpired(page)}
+function managedPage(page){
+ const allowed=window.KHIF_ACTIVE_LOGIN_AREAS;
+ return allowed===null||allowed.includes(normalizeAreaName(page?.kicker));
+}
+function updateExpirationUI(page){
+ const input=$('expiresOn');
+ if(!input||!els.enabled)return;
+ const expired=pageExpired({expiresOn:input.value});
+ els.enabled.disabled=expired;
+ if(expired)els.enabled.checked=false;
+ if(page&&expired)page.enabled=false;
+ const chooseButton=$('chooseExpirationDate');
+ const clearButton=$('clearExpirationDate');
+ if(chooseButton)chooseButton.textContent=input.value?`Valgt: ${input.value.split('-').reverse().join('.')}`:'Vælg dato i kalender';
+ if(clearButton)clearButton.hidden=!input.value;
+}
+
+async function loadSides(){
+ const file=await githubContent(CONFIG.contentPath);
+ sha=file.sha;
+ data=JSON.parse(b64ToUtf8(String(file.content||'').replace(/\n/g,'')));
+ if(!Array.isArray(data.pages))data.pages=[];
+ await fetchAreas();
+ window.KHIF_ALL_PAGES=data.pages.map((page,index)=>{
+  const updated={...page,theme:SIDE_THEMES[index%SIDE_THEMES.length]};
+  if(pageExpired(updated))updated.enabled=false;
+  return updated;
+ });
+ const allowed=window.KHIF_ACTIVE_LOGIN_AREAS;
+ data.pages=window.KHIF_ALL_PAGES.filter(managedPage);
+ if(!data.pages.length){
+  if(allowed!==null)throw new Error('Dette login er ikke tilknyttet områder med sider.');
+  data.pages.push(defaultSide(1));
+ }
+ if(!data.pages.length)data.pages.push(defaultSide(1));
+ selectedIndex=Math.min(Math.max(selectedIndex,0),data.pages.length-1);
+ ensureMeta();
+ await loadMedia();
+ renderTabs();
+ fillForm();
+ updateRepoStatus();
+ await checkDeploy();
+}
+
+function fillForm(){
+ if(selectedIndex<0)return togglePanels();
+ const page=data.pages[selectedIndex],images=sideImages(page);
+ if(els.enabled){els.enabled.checked=page.enabled!==false&&!pageExpired(page);els.enabled.disabled=pageExpired(page)}
+ renderAreaOptions(page.kicker||'');
+ if(els.title)els.title.value=page.title||'';
+ if(els.text)els.text.value=page.text||'';
+ const expiresOn=$('expiresOn');
+ if(expiresOn)expiresOn.value=page.expiresOn||'';
+ if(els.image1)els.image1.value=images[0]||'';
+ if(els.image2)els.image2.value=images[1]||'';
+ if(els.image3)els.image3.value=images[2]||'';
+ if(els.imageUpload)els.imageUpload.value='';
+ enforceEditorLimits();
+ updateExpirationUI(page);
+ togglePanels();
+}
+
+function sideFromForm(){
+ enforceEditorLimits();
+ const images=[els.image1?.value,els.image2?.value,els.image3?.value].filter(Boolean).map(value=>value.trim()).filter(Boolean).slice(0,3);
+ const selectedArea=normalizeAreaName(els.kicker?.value)||areaOptions[0]||DEFAULT_AREAS[0];
+ ensureAreaOption(selectedArea);
+ const current=data?.pages?.[selectedIndex]||{};
+ const expiresOn=$('expiresOn')?.value||'';
+ const expired=pageExpired({expiresOn});
+ return{...current,enabled:!expired&&els.enabled?.checked!==false,kicker:selectedArea,title:els.title?.value||'',text:els.text?.value||'',theme:current.theme??SIDE_THEMES[selectedIndex%SIDE_THEMES.length],expiresOn,image:images[0]||'',images};
+}
+
+function persistedPages(){
+ const original=window.KHIF_ALL_PAGES||[];
+ const firstOwned=original.findIndex(managedPage);
+ const before=firstOwned<0?original.length:original.slice(0,firstOwned).filter(page=>!managedPage(page)).length;
+ const retained=original.filter(page=>!managedPage(page));
+ retained.splice(before,0,...data.pages);
+ return retained;
+}
+function validatePageLimit(pages){
+ const counts=new Map();
+ pages.filter(pageIsActive).forEach(page=>{
+  const area=normalizeAreaName(page.kicker);
+  counts.set(area,(counts.get(area)||0)+1);
+ });
+ if([...counts.values()].some(count=>count>5))throw new Error('Max 5 sider per forening');
+}
+
+async function savePages(){
+ saveCurrent();
+ validatePageLimit(persistedPages());
+ await uploadIfNeeded();
+ saveCurrent();
+ const pages=persistedPages();
+ validatePageLimit(pages);
+ const meta=ensureMeta();
+ meta.version=Number(meta.version||0)+1;
+ meta.updatedAt=new Date().toISOString();
+ meta.updatedBy=CONFIG.adminUsername||'admin';
+ const payload={...data,pages};
+ const response=await githubContent(CONFIG.contentPath,{method:'PUT',body:JSON.stringify({message:`Update KHIF Info content v${meta.version}`,content:utf8ToB64(JSON.stringify(payload,null,2)+'\n'),sha,branch:CONFIG.branch})});
+ sha=response.content.sha;
+ window.KHIF_ALL_PAGES=pages;
+ await loadMedia();
+ renderTabs();
+ if(selectedIndex>=0)fillForm();
+ updateRepoStatus();
+ beginDeployCheck();
+}
+
+async function login(){
+ try{
+  msg(els.loginMessage,'Logger ind…');
+  els.loginButton.disabled=true;
+  if(!CONFIG)throw new Error('Admin-konfiguration mangler i secret.js.');
+  const username=normalizeUsername(els.username.value);
+  const password=String(els.password.value||'');
+  const logins=await fetchLogins();
+  const user=normalizeLogins(logins).users.find(entry=>entry.username===username);
+  if(!user)throw new Error('Forkert brugernavn eller password.');
+  if(user.role!=='admin'&&user.role!=='superadmin')throw new Error('Manglende adgang til admin.');
+  token=await decryptWithCredential(password,user);
+  await loadSides();
+  els.loginPanel.classList.add('hidden');
+  els.editorPanel.classList.remove('hidden');
+  els.logoutButton?.classList.remove('hidden');
+  els.password.value='';
+  msg(els.loginMessage,'');
+ }catch(error){token=null;msg(els.loginMessage,friendlyError(error),true)}
+ finally{els.loginButton.disabled=false}
+}
+
+function addSide(){
+ saveCurrent();
+ try{validatePageLimit(persistedPages())}catch(error){alert(friendlyError(error));return}
+ const areas=window.KHIF_ACTIVE_LOGIN_AREAS===null?areaOptions:window.KHIF_ACTIVE_LOGIN_AREAS;
+ const currentPages=persistedPages();
+ const area=areas.find(candidate=>currentPages.filter(page=>pageIsActive(page)&&normalizeAreaName(page.kicker)===candidate).length<5);
+ if(!area){alert('Max 5 sider per forening');return}
+ data.pages.push({...defaultSide(data.pages.length+1),kicker:area,theme:SIDE_THEMES[(window.KHIF_ALL_PAGES.length+data.pages.length)%SIDE_THEMES.length]});
+ selectedIndex=data.pages.length-1;
+ renderTabs();
+ fillForm();
+}
+
+async function saveToScreen(){
+ try{
+  msg(els.topSaveMessage||els.saveMessage,els.imageUpload?.files?.[0]?'Uploader billede og gemmer til infoskærm…':'Gemmer aktuel side…');
+  await savePages();
+  msg(els.topSaveMessage||els.saveMessage,'Aktuel side gemt til infoskærm. Status opdateres automatisk.');
+ }catch(error){
+  const message=friendlyError(error);
+  if(message==='Max 5 sider per forening')alert(message);
+  msg(els.topSaveMessage||els.saveMessage,message,true);
+ }
+}
+
+const expirationInput=$('expiresOn');
+expirationInput?.addEventListener('change',()=>updateExpirationUI(data?.pages?.[selectedIndex]));
+$('chooseExpirationDate')?.addEventListener('click',()=>{
+ if(typeof expirationInput?.showPicker==='function')expirationInput.showPicker();
+ else expirationInput?.focus();
+});
+$('clearExpirationDate')?.addEventListener('click',()=>{
+ if(!expirationInput)return;
+ expirationInput.value='';
+ updateExpirationUI(data?.pages?.[selectedIndex]);
+});
+$('saveCurrentPageButton')?.addEventListener('click',event=>{event.preventDefault();saveToScreen()});
+
 function init(){if(!els.loginButton)return;msg(els.loginMessage,'Klar til login.');if(els.checkDeployButton)els.checkDeployButton.classList.remove('hidden');if(els.loginForm)els.loginForm.onsubmit=async e=>{e.preventDefault();await login()};els.loginButton.onclick=login;els.password?.addEventListener('keydown',e=>{if(e.key==='Enter')login()});if(els.title)els.title.addEventListener('input',()=>enforceEditorLimits());if(els.text)els.text.addEventListener('input',()=>enforceEditorLimits());document.querySelectorAll('.emoji-target').forEach(el=>el.addEventListener('focus',()=>lastEmojiTarget=el));if(els.emojiButton)els.emojiButton.onclick=()=>{renderEmoji();els.emojiModal?.classList.remove('hidden');els.emojiSearch?.focus()};if(els.emojiSearch)els.emojiSearch.oninput=()=>renderEmoji(els.emojiSearch.value);if(els.closeEmojiModal)els.closeEmojiModal.onclick=()=>els.emojiModal?.classList.add('hidden');if(els.technicalDetailsButton)els.technicalDetailsButton.onclick=()=>{updateTechnicalDetailsModal();els.technicalDetailsModal?.classList.remove('hidden')};if(els.closeTechnicalDetails)els.closeTechnicalDetails.onclick=()=>els.technicalDetailsModal?.classList.add('hidden');[1,2,3].forEach((n,i)=>{const choose=$(`chooseImage${n}`),upload=$(`uploadImage${n}`);if(choose)choose.onclick=()=>{imageSlot=i;renderPicker();els.imageModal?.classList.remove('hidden')};if(upload)upload.onclick=async()=>{if(!(await confirmImageGuidelines()))return;imageSlot=i;if(els.uploadSlot)els.uploadSlot.value=String(i);els.imageUpload?.click()}});if(els.closeImageModal)els.closeImageModal.onclick=()=>els.imageModal?.classList.add('hidden');const clear=$('clearImagesButton');if(clear)clear.onclick=()=>{if(els.image1)els.image1.value='';if(els.image2)els.image2.value='';if(els.image3)els.image3.value=''};if(els.clearImage1)els.clearImage1.onclick=()=>{if(els.image1)els.image1.value=''};if(els.clearImage2)els.clearImage2.onclick=()=>{if(els.image2)els.image2.value=''};if(els.clearImage3)els.clearImage3.onclick=()=>{if(els.image3)els.image3.value=''};if(els.imageLibraryButton)els.imageLibraryButton.onclick=()=>setLibraryPanelVisible(els.imageLibraryPanel?.classList.contains('hidden')===true);if(els.addPageButton)els.addPageButton.onclick=addSide;if(els.removePageButton)els.removePageButton.onclick=removeSide;if(els.refreshMediaButton)els.refreshMediaButton.onclick=loadMedia;if(els.form)els.form.onsubmit=async e=>{e.preventDefault();await saveToScreen()};if(els.saveToScreenButton)els.saveToScreenButton.onclick=e=>{e.preventDefault();saveToScreen()};if(els.previewButton)els.previewButton.onclick=e=>{e.preventDefault();openPreview(false)};if(els.previewAllButton)els.previewAllButton.onclick=e=>{e.preventDefault();openPreview(true)};if(els.logoutButton)els.logoutButton.onclick=()=>location.reload();if(els.checkDeployButton)els.checkDeployButton.onclick=()=>checkDeploy()}
 if(els.imageUpload){els.imageUpload.addEventListener('change',async()=>{try{if(!els.imageUpload.files?.[0])return;msg(els.saveMessage,'Uploader billede…');await uploadIfNeeded();await loadMedia();msg(els.saveMessage,'Billede uploaded.');}catch(error){msg(els.saveMessage,friendlyError(error),true)}})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();

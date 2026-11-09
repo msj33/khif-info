@@ -13,6 +13,8 @@ Her står der, hvordan man opdaterer indholdet på infoskærmen.
 
 Når du har gemt, bliver indholdet sendt videre til infoskærmen. Den opdaterer automatisk, så de nye tekster og billeder vises på skærmen.
 
+Sider med en udløbsdato deaktiveres automatisk på selve datoen (dansk lokal tid). En planlagt GitHub Action kører hvert 15. minut og gemmer ændringen i `content/pages.json`, så den også bliver deployet til infoskærmen.
+
 Tips:
 - Upload billeder direkte fra adminpanelet.
 - Brug et kort og tydeligt budskab på hver slide.

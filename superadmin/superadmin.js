@@ -65,6 +65,7 @@
     newLoginUsername: $('newLoginUsername'),
     newLoginPassword: $('newLoginPassword'),
     newLoginRole: $('newLoginRole'),
+    newLoginAreas: $('newLoginAreas'),
     addLoginButton: $('addLoginButton'),
     loginList: $('loginList'),
     loginAdminMessage: $('loginAdminMessage'),
@@ -709,6 +710,7 @@
     els.areaList.querySelectorAll('[data-remove-area]').forEach(btn => {
       btn.onclick = () => removeArea(btn.getAttribute('data-remove-area') || '');
     });
+    renderLoginAdmin();
   }
 
   async function refreshAreas() {
@@ -794,6 +796,137 @@
       msg(els.loginMessage, friendlyError(error), true);
     } finally {
       els.loginButton.disabled = false;
+    }
+  }
+
+  function escapeLoginHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+  }
+
+  function normalizeLogins(logins) {
+    const base = defaultLogins();
+    const areaNames = normalizeAreas(areasData).areas;
+    const src = Array.isArray(logins?.users) ? logins.users : [];
+    const users = [];
+    src.forEach(entry => {
+      const username = normalizeUsername(entry?.username);
+      if (!username || users.some(user => user.username === username)) return;
+      const role = normalizeRole(entry?.role);
+      const iterations = Number(entry?.iterations || CONFIG.iterations || 250000);
+      const salt = String(entry?.salt || '');
+      const iv = String(entry?.iv || '');
+      const encryptedToken = String(entry?.encryptedToken || '');
+      if (!salt || !iv || !encryptedToken) return;
+      const assigned = Array.isArray(entry?.areas)
+        ? [...new Set(entry.areas.map(normalizeAreaName).filter(Boolean))]
+        : null;
+      users.push({
+        username, role, iterations, salt, iv, encryptedToken,
+        areas: role === 'superadmin' ? [...areaNames] : assigned
+      });
+    });
+    const root = normalizeUsername(CONFIG.adminUsername || 'admin');
+    if (!users.some(user => user.username === root)) {
+      users.push({ ...base.users[0], username: root, role: 'superadmin', areas: [...areaNames] });
+    }
+    return {
+      version: Number(logins?.version || base.version || 2),
+      users,
+      updatedAt: logins?.updatedAt || base.updatedAt,
+      updatedBy: logins?.updatedBy || base.updatedBy
+    };
+  }
+
+  function renderNewLoginAreas() {
+    if (!els.newLoginAreas) return;
+    const areas = normalizeAreas(areasData).areas;
+    els.newLoginAreas.innerHTML = areas.map(area =>
+      `<label class="area-option"><input type="checkbox" data-new-login-area value="${escapeLoginHtml(area)}" checked />${escapeLoginHtml(area)}</label>`
+    ).join('');
+  }
+
+  function renderLoginAdmin() {
+    if (!els.loginList) return;
+    renderNewLoginAreas();
+    const areas = normalizeAreas(areasData).areas;
+    const users = normalizeLogins(loginsData).users.sort((a, b) => a.username.localeCompare(b.username));
+    els.loginList.innerHTML = users.map(user => {
+      const canDelete = user.username !== normalizeUsername(CONFIG.adminUsername) && user.username !== currentLoginUsername;
+      const assigned = new Set(user.areas || areas);
+      return `<div class="schedule-day" data-login-card="${escapeLoginHtml(user.username)}">
+        <p class="status-label">${escapeLoginHtml(user.username)}</p>
+        <p class="status-value">${user.role === 'superadmin' ? 'Superadmin (begge paneler)' : 'Admin (/admin)'}</p>
+        <fieldset class="area-access"><legend>Områder</legend><div class="area-checkboxes">
+          ${areas.map(area => `<label class="area-option"><input type="checkbox" data-login-area value="${escapeLoginHtml(area)}" ${assigned.has(area) ? 'checked' : ''} ${user.role === 'superadmin' ? 'disabled' : ''} />${escapeLoginHtml(area)}</label>`).join('')}
+        </div></fieldset>
+        <label>Nyt password<input type="password" data-login-password autocomplete="new-password" /></label>
+        <label>Rolle<select data-login-role>
+          <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+          <option value="superadmin" ${user.role === 'superadmin' ? 'selected' : ''}>Superadmin</option>
+        </select></label>
+        <div class="actions">
+          <button type="button" class="secondary" data-save-login="${escapeLoginHtml(user.username)}">Gem ændringer</button>
+          <button type="button" class="danger" data-remove-login="${escapeLoginHtml(user.username)}" ${canDelete ? '' : 'disabled'}>Fjern login</button>
+        </div>
+      </div>`;
+    }).join('');
+    els.loginList.querySelectorAll('[data-save-login]').forEach(button => {
+      button.onclick = () => updateLogin(button.getAttribute('data-save-login') || '');
+    });
+    els.loginList.querySelectorAll('[data-remove-login]').forEach(button => {
+      button.onclick = () => removeLogin(button.getAttribute('data-remove-login') || '');
+    });
+  }
+
+  async function addLogin() {
+    try {
+      const username = normalizeUsername(els.newLoginUsername?.value);
+      const password = String(els.newLoginPassword?.value || '').trim();
+      const role = normalizeRole(els.newLoginRole?.value);
+      const areas = [...(els.newLoginAreas?.querySelectorAll('[data-new-login-area]:checked') || [])].map(input => input.value);
+      if (!username) throw new Error('Brugernavn mangler.');
+      if (!password) throw new Error('Password mangler.');
+      if (role === 'admin' && !areas.length) throw new Error('Vælg mindst ét område.');
+      const data = normalizeLogins(loginsData);
+      if (data.users.some(user => user.username === username)) throw new Error('Brugernavnet findes allerede.');
+      const cred = await encryptTokenForPassword(token, password, Number(CONFIG.iterations || 250000));
+      data.users.push({ username, role, areas: role === 'superadmin' ? normalizeAreas(areasData).areas : areas, ...cred });
+      loginsData = data;
+      await saveLogins();
+      els.newLoginUsername.value = '';
+      els.newLoginPassword.value = '';
+      msg(els.loginAdminMessage, 'Login oprettet.');
+    } catch (error) {
+      msg(els.loginAdminMessage, friendlyError(error), true);
+    }
+  }
+
+  async function updateLogin(username) {
+    try {
+      const key = normalizeUsername(username);
+      const card = [...(els.loginList?.querySelectorAll('[data-login-card]') || [])]
+        .find(item => item.getAttribute('data-login-card') === key);
+      if (!key || !card) throw new Error('Login blev ikke fundet.');
+      const role = normalizeRole(card.querySelector('[data-login-role]')?.value);
+      const passwordInput = card.querySelector('[data-login-password]');
+      const newPassword = String(passwordInput?.value || '').trim();
+      const areas = [...card.querySelectorAll('[data-login-area]:checked')].map(input => input.value);
+      if (role === 'admin' && !areas.length) throw new Error('Vælg mindst ét område.');
+      const data = normalizeLogins(loginsData);
+      const user = data.users.find(entry => entry.username === key);
+      if (!user) throw new Error('Login blev ikke fundet.');
+      user.role = key === normalizeUsername(CONFIG.adminUsername) ? 'superadmin' : role;
+      user.areas = user.role === 'superadmin' ? normalizeAreas(areasData).areas : areas;
+      if (newPassword) {
+        const cred = await encryptTokenForPassword(token, newPassword, Number(CONFIG.iterations || 250000));
+        Object.assign(user, cred);
+      }
+      loginsData = data;
+      await saveLogins();
+      if (passwordInput) passwordInput.value = '';
+      msg(els.loginAdminMessage, 'Login opdateret.');
+    } catch (error) {
+      msg(els.loginAdminMessage, friendlyError(error), true);
     }
   }
 

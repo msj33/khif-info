@@ -27,6 +27,20 @@
       try{const r=await fetch(`./version.json?t=${Date.now()}`,{cache:"no-store"});if(r.ok){const j=await r.json();version=String(j.appVersion||version)}}catch(e){console.warn("Kunne ikke hente version.json",e)}
       window.KHIF_BOOT_VERSION=version;
       const css=document.createElement("link");css.rel="stylesheet";css.href=`./style.css?t=${encodeURIComponent(version)}`;document.head.appendChild(css);
+      const nativeFetch=window.fetch.bind(window);
+      window.fetch=async(input,init)=>{
+        const response=await nativeFetch(input,init);
+        if(!response.ok||!String(input).includes("./content/pages.json"))return response;
+        const content=await response.clone().json();
+        const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Copenhagen",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+        const today=`${parts.find(part=>part.type==="year")?.value}-${parts.find(part=>part.type==="month")?.value}-${parts.find(part=>part.type==="day")?.value}`;
+        content.pages=(content.pages||[]).filter(page=>page.enabled!==false&&(!page.expiresOn||page.expiresOn>today));
+        if(!content.pages.length)content.pages=[{enabled:true,kicker:"KHIF Info",title:"Ingen aktive sider",text:"Alle sider er udløbet eller deaktiveret."}];
+        const headers=new Headers(response.headers);
+        headers.delete("content-length");
+        headers.delete("content-encoding");
+        return new Response(JSON.stringify(content),{status:response.status,statusText:response.statusText,headers});
+      };
       const js=document.createElement("script");js.src=`./script.js?t=${encodeURIComponent(version)}`;js.defer=true;document.body.appendChild(js);
     }
     khifLoadApp();

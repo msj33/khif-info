@@ -1,0 +1,66 @@
+name: Deactivate expired pages
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: expire-content-pages
+  cancel-in-progress: false
+
+jobs:
+  deactivate-expired-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deactivate pages whose expiration date has arrived
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = 'main';
+            const path = 'content/pages.json';
+            const { data: file } = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              ref: branch
+            });
+            if (Array.isArray(file) || !file.content) {
+              throw new Error(`${path} is not a file`);
+            }
+
+            const content = JSON.parse(Buffer.from(file.content, 'base64').toString('utf8'));
+            const dateParts = new Intl.DateTimeFormat('en-CA', {
+              timeZone: 'Europe/Copenhagen',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+            }).formatToParts(new Date());
+            const today = `${dateParts.find(part => part.type === 'year').value}-${dateParts.find(part => part.type === 'month').value}-${dateParts.find(part => part.type === 'day').value}`;
+            const expiredPages = (content.pages || []).filter(page =>
+              page.enabled !== false && page.expiresOn && page.expiresOn <= today
+            );
+            if (!expiredPages.length) {
+              core.info(`No pages to deactivate for ${today}.`);
+              return;
+            }
+
+            for (const page of expiredPages) page.enabled = false;
+            content.meta = content.meta || {};
+            content.meta.version = Number(content.meta.version || 0) + 1;
+            content.meta.updatedAt = new Date().toISOString();
+            content.meta.updatedBy = 'expiration-automation';
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              message: `Deactivate ${expiredPages.length} expired page(s)`,
+              content: Buffer.from(`${JSON.stringify(content, null, 2)}\n`).toString('base64'),
+              sha: file.sha,
+              branch
+            });
+            core.info(`Deactivated ${expiredPages.length} page(s); this commit will deploy the updated content.`);

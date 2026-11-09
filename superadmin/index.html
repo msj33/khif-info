@@ -37,7 +37,7 @@
       <section class="card raw-card"><details><summary>JSON data</summary><div class="json-section"><div><p class="json-label">Skærmplan JSON</p><pre id="scheduleJson">{}</pre></div><div><p class="json-label">Status JSON</p><pre id="rawStatus">{}</pre></div></div></details></section>
       <section class="card">
         <h2>Login-styring</h2>
-        <p class="muted">Tilføj/fjern logins og vælg adgangsniveau. Superadmin har altid adgang til både <code>/superadmin</code> og <code>/admin</code>.</p>
+        <p class="muted">Tilføj/fjern logins, vælg rolle og tildel områder. Admin-logins kan kun se sider i deres valgte områder. Superadmin har altid adgang til både <code>/superadmin</code> og <code>/admin</code>.</p>
         <div class="schedule-day">
           <label>Brugernavn<input id="newLoginUsername" autocomplete="off" /></label>
           <label>Password<input id="newLoginPassword" type="password" autocomplete="new-password" /></label>
@@ -47,6 +47,7 @@
               <option value="superadmin">Superadmin</option>
             </select>
           </label>
+          <fieldset class="area-access"><legend>Områder</legend><div id="newLoginAreas" class="area-checkboxes"></div></fieldset>
           <div class="actions">
             <button id="addLoginButton" type="button">Tilføj login</button>
           </div>

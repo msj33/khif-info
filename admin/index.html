@@ -19,7 +19,7 @@
 
     <form id="loginPanel" class="card" autocomplete="on">
       <h2>Log ind</h2>
-      <p>Brug det fælles redaktør-login.</p>
+      <p>Brug dit login fra Superadmin.</p>
       <label>Brugernavn<input id="username" name="username" autocomplete="username" /></label>
       <label>Password<input id="password" name="password" type="password" autocomplete="current-password" /></label>
       <button id="loginButton" type="submit">Log ind</button>
@@ -60,7 +60,11 @@
             <label>Titel<input id="title" class="emoji-target" required maxlength="48" /></label>
             <label>Tekst<textarea id="text" class="emoji-target" rows="5"></textarea></label>
             <div class="actions compact"><button id="emojiButton" type="button" class="secondary">Indsæt emoji</button></div>
-            <label>Tema<select id="theme"><option value="">Standard</option><option value="green">Grøn</option><option value="blue">Blå</option><option value="purple">Lilla</option><option value="gold">Gylden</option></select></label>
+            <label>Udløbsdato
+              <input id="expiresOn" type="date" />
+              <button id="chooseExpirationDate" type="button" class="secondary">Vælg dato i kalender</button>
+              <button id="clearExpirationDate" type="button" class="secondary">Fjern dato</button>
+            </label>
 
             <div class="image-slots">
               <div class="image-slot"><label>Billede 1<input id="image1" placeholder="URL eller vælg billede" /></label><div class="slot-buttons"><button id="chooseImage1" type="button" class="secondary">Vælg…</button><button id="uploadImage1" type="button" class="secondary">Upload</button><button id="clearImage1" type="button" class="secondary">Fjern</button></div></div>
@@ -78,7 +82,7 @@
             </div>
             <div id="mediaLibrary" class="media-library"><p class="message">Logger ind…</p></div>
           </section>
-          <div class="actions"><button type="button" id="previewButton" class="secondary">Preview aktuel side</button></div>
+          <div class="actions"><button type="button" id="previewButton" class="secondary">Preview aktuel side</button><button type="button" id="saveCurrentPageButton">Gem aktuel side</button></div>
           <p id="saveMessage" class="message"></p>
         </form>
       </div>
