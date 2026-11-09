@@ -33,8 +33,7 @@ async function githubRequest(path, token, options = {}) {
 }
 
 async function getAreas() {
-  const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/content/areas.json?ref=main`, {
-    headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+  const response = await fetch(`https://${OWNER}.github.io/${REPO}/content/areas.json`, {
     cf: { cacheTtl: 60, cacheEverything: true }
   });
   if (response.status === 404) return DEFAULT_AREAS;
