@@ -28,7 +28,7 @@ async function githubRequest(path, token, options = {}) {
     }
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.message || `GitHub API error ${response.status}`);
+  if (!response.ok) throw new Error(`GitHub API ${response.status}: ${body.message || 'Ukendt fejl'}`);
   return body;
 }
 
@@ -42,7 +42,7 @@ async function ensureIssueLabel(token) {
     headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${token}`, 'X-GitHub-Api-Version': '2022-11-28' }
   });
   if (response.ok) return;
-  if (response.status !== 404) throw new Error(`Could not check issue label (${response.status})`);
+  if (response.status !== 404) throw new Error(`Kunne ikke kontrollere GitHub-label (${response.status})`);
   try {
     await githubRequest(`/repos/${OWNER}/${REPO}/labels`, token, {
       method: 'POST',
@@ -114,8 +114,10 @@ export default {
         })
       });
       return jsonResponse({ ok: true, number: issue.number }, 201, origin);
-    } catch {
-      return jsonResponse({ error: 'Nyheden kunne ikke indsendes lige nu. Prøv igen senere.' }, 502, origin);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : 'Ukendt fejl';
+      console.error('Indsendelse til GitHub fejlede:', detail);
+      return jsonResponse({ error: `GitHub afviste indsendelsen: ${detail}` }, 502, origin);
     }
   }
 };
