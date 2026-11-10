@@ -8,10 +8,10 @@ const AREAS_PATH='content/areas.json';
 const DEFAULT_AREAS=['KHIF - Info','Fodbold','Badminton','Gymnastik','Tennis','Volleyball','Fitness','Andet'];
 const TITLE_MAX_CHARS=48;
 const TEXT_MAX_LINES=16;
-let token=null,sha=null,data=null,selectedIndex=0,mediaFiles=[],imageSlot=0,lastEmojiTarget=null,deployTimer=null,deployMonitoring=false,inboxTimer=null,pendingImagePreviews={},githubStatus={repoVersion:'-',repoUpdated:'-',deployedVersion:'-',deployedChecked:'-'},areaOptions=[...DEFAULT_AREAS],inboxIssues=[];
+let token=null,sha=null,data=null,selectedIndex=0,mediaFiles=[],imageSlot=0,lastEmojiTarget=null,deployTimer=null,deployMonitoring=false,inboxTimer=null,pendingImagePreviews={},pendingSubmissionIssue=null,githubStatus={repoVersion:'-',repoUpdated:'-',deployedVersion:'-',deployedChecked:'-'},areaOptions=[...DEFAULT_AREAS],inboxIssues=[];
 const els={loginForm:$('loginForm'),loginPanel:$('loginPanel'),editorPanel:$('editorPanel'),logoutButton:$('logoutButton'),username:$('username'),password:$('password'),loginButton:$('loginButton'),loginMessage:$('loginMessage'),
  pageTabs:$('pageTabs'),form:$('editorForm'),saveMessage:$('saveMessage'),topSaveMessage:$('topSaveMessage'),saveToScreenButton:$('saveToScreenButton'),previewButton:$('previewButton'),previewAllButton:$('previewAllButton'),
- inboxButton:$('inboxButton'),inboxBadge:$('inboxBadge'),inboxPanel:$('inboxPanel'),inboxList:$('inboxList'),inboxMessage:$('inboxMessage'),refreshInboxButton:$('refreshInboxButton'),closeInboxButton:$('closeInboxButton'),
+ inboxButton:$('inboxButton'),inboxBadge:$('inboxBadge'),inboxPanel:$('inboxPanel'),inboxList:$('inboxList'),inboxMessage:$('inboxMessage'),refreshInboxButton:$('refreshInboxButton'),closeInboxButton:$('closeInboxButton'),submissionDraftHelp:$('submissionDraftHelp'),
  pageEditorPanel:$('pageEditorPanel'),imageLibraryButton:$('imageLibraryButton'),imageLibraryPanel:$('imageLibraryPanel'),theme:$('theme'),addPageButton:$('addPageButton'),removePageButton:$('removePageButton'),enabled:$('enabled'),kicker:$('kicker'),title:$('title'),text:$('text'),footer:$('footer'),image1:$('image1'),image2:$('image2'),image3:$('image3'),clearImage1:$('clearImage1'),clearImage2:$('clearImage2'),clearImage3:$('clearImage3'),uploadSlot:$('uploadSlot'),imageUpload:$('imageUpload'),
  screenEta:$('screenEta'),deployStatus:$('deployStatus'),checkDeployButton:$('checkDeployButton'),technicalDetailsButton:$('technicalDetailsButton'),technicalDetailsModal:$('technicalDetailsModal'),closeTechnicalDetails:$('closeTechnicalDetails'),modalRepoVersion:$('modalRepoVersion'),modalRepoUpdated:$('modalRepoUpdated'),modalDeployedVersion:$('modalDeployedVersion'),modalDeployedChecked:$('modalDeployedChecked'),mediaLibrary:$('mediaLibrary'),refreshMediaButton:$('refreshMediaButton'),imageModal:$('imageModal'),closeImageModal:$('closeImageModal'),imagePickerGrid:$('imagePickerGrid'),
  emojiButton:$('emojiButton'),emojiModal:$('emojiModal'),closeEmojiModal:$('closeEmojiModal'),emojiSearch:$('emojiSearch'),emojiGrid:$('emojiGrid')
@@ -291,7 +291,16 @@ async function saveToScreen(){
  try{
   msg(els.topSaveMessage||els.saveMessage,els.imageUpload?.files?.[0]?'Uploader billede og gemmer til infoskærm…':'Gemmer aktuel side…');
   await savePages();
-  msg(els.topSaveMessage||els.saveMessage,'Aktuel side gemt til infoskærm. Status opdateres automatisk.');
+  if(pendingSubmissionIssue){
+   const issue=pendingSubmissionIssue;
+   await closeInboxIssue(issue,'completed');
+   pendingSubmissionIssue=null;
+   els.submissionDraftHelp?.classList.add('hidden');
+   await refreshInbox();
+   msg(els.topSaveMessage||els.saveMessage,`Nyhed #${issue.number} gemt til infoskærmen.`);
+  }else{
+   msg(els.topSaveMessage||els.saveMessage,'Aktuel side gemt til infoskærm. Status opdateres automatisk.');
+  }
  }catch(error){
   const message=friendlyError(error);
   if(message==='Max 5 sider per forening')alert(message);
@@ -351,7 +360,7 @@ function renderInbox(){
   const text=document.createElement('p');text.className='inbox-text';text.textContent=fields.text;
   const link=document.createElement('a');link.href=issue.html_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=`Issue #${issue.number}`;
   const actions=document.createElement('div');actions.className='actions';
-  const approve=document.createElement('button');approve.type='button';approve.textContent='Godkend';approve.onclick=()=>approveInboxIssue(issue);
+  const approve=document.createElement('button');approve.type='button';approve.textContent='Opret';approve.onclick=()=>createInboxIssue(issue);
   const reject=document.createElement('button');reject.type='button';reject.className='danger';reject.textContent='Afvis';reject.onclick=()=>rejectInboxIssue(issue);
   actions.append(approve,reject);
   card.append(area,title,text,link,actions);
@@ -388,45 +397,36 @@ async function rejectInboxIssue(issue){
   msg(els.inboxMessage,`Nyhed #${issue.number} afvist og lukket.`);
  }catch(error){msg(els.inboxMessage,friendlyError(error),true)}
 }
-async function approveInboxIssue(issue){
+function createInboxIssue(issue){
  if(!canManageIssue(issue))return;
  const fields=issueFields(issue);
  if(!fields.area||!fields.title||!fields.text){msg(els.inboxMessage,`Nyhed #${issue.number} mangler område, titel eller tekst.`,true);return}
- if(!confirm(`Godkend "${fields.title}" fra ${fields.area}? Der oprettes en aktiv side på infoskærmen.`))return;
- const existing=persistedPages().find(page=>page.submissionIssueUrl===issue.html_url);
- try{
-  if(!existing){
-   const page={
-    ...defaultSide(data.pages.length+1),
-    enabled:true,
-    kicker:fields.area,
-    title:fields.title.slice(0,TITLE_MAX_CHARS),
-    text:fields.text.slice(0,200),
-    theme:SIDE_THEMES[(window.KHIF_ALL_PAGES.length+data.pages.length)%SIDE_THEMES.length],
-    submissionIssueUrl:issue.html_url
-   };
-   validatePageLimit([...persistedPages(),page]);
-   data.pages.push(page);
-   selectedIndex=data.pages.length-1;
-   renderTabs();
-   fillForm();
-   await savePages();
-  }
-  await closeInboxIssue(issue,'completed');
-  if(existing){
-   selectedIndex=data.pages.findIndex(page=>page.submissionIssueUrl===issue.html_url);
-   if(selectedIndex>=0){renderTabs();fillForm()}
-  }
-  if(els.inboxPanel)els.inboxPanel.classList.add('hidden');
-  if(els.pageEditorPanel)els.pageEditorPanel.classList.remove('hidden');
-  togglePanels();
-  msg(els.saveMessage,`Nyhed #${issue.number} godkendt. Siden kan nu redigeres og previewes.`);
-  await refreshInbox();
- }catch(error){
-  const message=friendlyError(error);
-  await refreshInbox();
-  msg(els.inboxMessage,message,true);
+ const existing=data.pages.find(page=>page.submissionIssueUrl===issue.html_url);
+ if(existing){
+  selectedIndex=data.pages.indexOf(existing);
+ }else{
+  const page={
+   ...defaultSide(data.pages.length+1),
+   enabled:true,
+   kicker:fields.area,
+   title:fields.title.slice(0,TITLE_MAX_CHARS),
+   text:fields.text.slice(0,200),
+   theme:SIDE_THEMES[(window.KHIF_ALL_PAGES.length+data.pages.length)%SIDE_THEMES.length],
+   submissionIssueUrl:issue.html_url
+  };
+  try{validatePageLimit([...persistedPages(),page])}catch(error){msg(els.inboxMessage,friendlyError(error),true);return}
+  data.pages.push(page);
+  selectedIndex=data.pages.length-1;
  }
+ pendingSubmissionIssue=issue;
+ renderTabs();
+ fillForm();
+ els.inboxPanel?.classList.add('hidden');
+ els.imageLibraryPanel?.classList.add('hidden');
+ els.pageEditorPanel?.classList.remove('hidden');
+ togglePanels();
+ els.submissionDraftHelp?.classList.remove('hidden');
+ msg(els.topSaveMessage,'');
 }
 function openInbox(){
  if(els.inboxPanel&&!els.inboxPanel.classList.contains('hidden')){closeInbox();return}
