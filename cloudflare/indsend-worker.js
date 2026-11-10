@@ -22,6 +22,7 @@ async function githubRequest(path, token, options = {}) {
     ...options,
     headers: {
       Accept: 'application/vnd.github+json',
+      'User-Agent': 'KHIF-Info-News-Submission-Worker',
       Authorization: `Bearer ${token}`,
       'X-GitHub-Api-Version': '2022-11-28',
       ...(options.headers || {})
