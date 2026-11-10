@@ -114,7 +114,7 @@
       "theme": ""
     },
     {
-      "enabled": false,
+      "enabled": true,
       "kicker": "Fitness",
       "title": "Træn i KHIF Fitness 💪",
       "text": "Træn fra kun 125.- om måned 🤩\n\n3 måneder medlemskab - 450 kr.\n6 måneder medlemskab - 750 kr.\n\nSe mere information og indmeld dig via hjemmesiden",
@@ -122,23 +122,12 @@
       "images": [],
       "image": "",
       "theme": "green",
-      "expiresOn": "2026-11-10"
-    },
-    {
-      "enabled": true,
-      "kicker": "Badminton",
-      "title": "Test 2",
-      "text": "Test 3",
-      "theme": "purple",
-      "images": [],
-      "image": "",
-      "submissionIssueUrl": "https://github.com/msj33/khif-info/issues/5",
       "expiresOn": ""
     }
   ],
   "meta": {
-    "version": 77,
-    "updatedAt": "2026-11-10T00:17:53.581Z",
+    "version": 78,
+    "updatedAt": "2026-11-10T00:19:08.846Z",
     "updatedBy": "khif"
   },
   "config": {
