@@ -27,8 +27,18 @@ async function githubRequest(path, token, options = {}) {
       ...(options.headers || {})
     }
   });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(`GitHub API ${response.status}: ${body.message || 'Ukendt fejl'}`);
+  const responseText = await response.text();
+  let body = {};
+  try {
+    body = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    body = { message: responseText.slice(0, 300) };
+  }
+  if (!response.ok) {
+    const requestId = response.headers.get('x-github-request-id');
+    const detail = body.message || `Tomt svar fra GitHub${response.headers.get('x-ratelimit-remaining') === '0' ? ' (API-rategrænsen er nået)' : ''}`;
+    throw new Error(`GitHub API ${response.status}: ${detail}${requestId ? ` [request ${requestId}]` : ''}`);
+  }
   return body;
 }
 
