@@ -103,7 +103,6 @@ export default {
     try {
       const areas = getAreas();
       if (!areas.includes(area)) return jsonResponse({ error: 'Vælg et gyldigt område.' }, 400, origin);
-      await ensureIssueLabel(env.INDSEND_PAT_TOKEN);
       const issue = await githubRequest(`/repos/${OWNER}/${REPO}/issues`, env.INDSEND_PAT_TOKEN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
