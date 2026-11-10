@@ -376,7 +376,7 @@ async function closeInboxIssue(issue,reason){
 }
 async function rejectInboxIssue(issue){
  if(!canManageIssue(issue))return;
- if(!confirm(`Afvis nyheden fra "${issueArea(issue)}"? Den lukkes i GitHub Issues, hvor historikken bevares.`))return;
+ if(!confirm('Afvis den indsendte nyhed?'))return;
  try{
   await closeInboxIssue(issue,'not_planned');
   await refreshInbox();
