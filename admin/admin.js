@@ -321,7 +321,12 @@ async function inboxRequest(path,options={}){
   headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${token}`,'X-GitHub-Api-Version':'2022-11-28',...(options.headers||{})}
  });
  const result=response.status===204?{}:await response.json().catch(()=>({}));
- if(!response.ok)throw new Error(result.message||`GitHub API fejl ${response.status}`);
+ if(!response.ok){
+  if(response.status===403&&result.message==='Resource not accessible by personal access token'){
+   throw new Error('Admin-loginets GitHub-token har ikke adgang til at lukke issues. Kontrollér, at msj33/khif-info er valgt, og at Issues står til Read and write. Cloudflare-secretet bruges kun til nye indsendelser.');
+  }
+  throw new Error(result.message||`GitHub API fejl ${response.status}`);
+ }
  return result;
 }
 function updateInboxBadge(){
